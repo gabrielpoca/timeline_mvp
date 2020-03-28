@@ -1,25 +1,21 @@
-"use strict";
+import fs from "fs";
+import { app, BrowserWindow, shell } from "electron";
+import path from "path";
 
-import { app, BrowserWindow } from "electron";
-import { ipcMain } from "electron";
-import axios from "axios";
+import * as entries from "./entries";
+import * as images from "./images";
 
-import low from "lowdb";
-import FileSync from "lowdb/adapters/FileSync";
+const logFile = fs.openSync(`${app.getPath("userData")}/log`, "w");
 
-const adapter = new FileSync("db.json");
-const db = low(adapter);
-
-db.defaults({ entries: [] }).write();
+global.entries = entries;
+global.images = images;
 
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
  */
 if (process.env.NODE_ENV !== "development") {
-  global.__static = require("path")
-    .join(__dirname, "/static")
-    .replace(/\\/g, "\\\\");
+  global.__static = path.join(__dirname, "/static").replace(/\\/g, "\\\\");
 }
 
 let mainWindow;
@@ -29,19 +25,33 @@ const winURL =
     : `file://${__dirname}/index.html`;
 
 function createWindow() {
-  /**
-   * Initial window options
-   */
   mainWindow = new BrowserWindow({
+    titleBarStyle: "hiddenInset",
     height: 800,
     useContentSize: true,
-    width: 1400
+    width: process.env.NODE_ENV === "production" ? 900 : 1500,
+    enableRemoteModule: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   mainWindow.loadURL(winURL);
 
   mainWindow.on("closed", () => {
     mainWindow = null;
+  });
+
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    if (url.startsWith("http://localhost")) return;
+    event.preventDefault();
+    shell.openExternal(url);
+  });
+
+  mainWindow.webContents.on("new-window", (event, url) => {
+    if (url.startsWith("http://localhost")) return;
+    event.preventDefault();
+    shell.openExternal(url);
   });
 }
 
@@ -59,38 +69,12 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on("add", async (event, url) => {
-  try {
-    const response = await axios.get(url);
-    // const dom = new jsdom.JSDOM(response.data, {
-    //   url
-    // });
-    // const reader = new Readability(doc.window.document);
-    // const article = reader.parse();
-    // console.log(article);
-
-    // const $ = cheerio.load(response.data);
-    // juice.juiceResources(response.data, {}, (err, data) => {
-    //   if (err) throw err;
-    //   const html = cheerio.load(data)('body').html();
-    db.get("entries")
-      .push({ url, content: response.data })
-      .write();
-    loadAll(event);
-    // })
-  } catch (e) {
-    console.error(e);
-  }
+process.on("uncaughtException", (err, origin) => {
+  fs.writeSync(
+    logFile,
+    `Caught exception: ${err}\n` + `Exception origin: ${origin}`
+  );
 });
-
-ipcMain.on("loadAll", event => {
-  loadAll(event);
-});
-
-function loadAll(event) {
-  const entries = db.get("entries").value();
-  event.sender.send("loadAll", entries);
-}
 
 /**
  * Auto Updater

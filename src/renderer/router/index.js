@@ -1,18 +1,27 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-Vue.use(Router)
+Vue.use(Router);
+
+import EntryList from "../components/EntryList";
+import ReadLater from "../components/ReadLater";
 
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage').default
+      path: "/",
+      name: "entryList",
+      component: EntryList
     },
     {
-      path: '*',
-      redirect: '/'
+      path: "/readLater/:id",
+      name: "readLater",
+      props: true,
+      component: ReadLater
+    },
+    {
+      path: "*",
+      redirect: "/"
     }
   ]
-})
+});

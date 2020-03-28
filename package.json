@@ -1,8 +1,8 @@
 {
-  "name": "read_later",
+  "name": "timeline",
   "version": "0.0.1",
-  "author": "Gabriel Poça <gabrielpoca@gmail.com>",
-  "description": "An electron-vue project",
+  "author": "Gabriel Poça <mail@gabrielpoca.com>",
+  "description": "A work timeline",
   "license": null,
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -22,8 +22,8 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "read_later",
-    "appId": "com.gabrielpoca.read",
+    "productName": "Timeline",
+    "appId": "com.gabrielpoca.timeline",
     "directories": {
       "output": "build"
     },
@@ -46,10 +46,10 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/icon.png"
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "build/icons/icon.png"
     },
     "linux": {
       "icon": "build/icons"
@@ -57,16 +57,22 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "babel-runtime": "^6.26.0",
     "cheerio": "^1.0.0-rc.3",
-    "eslint-config-prettier": "^6.10.0",
+    "date-fns": "^2.11.0",
     "jsdom": "^16.2.1",
-    "juice": "^6.0.0",
     "lowdb": "^1.0.0",
-    "readability": "^0.1.0",
+    "luxon": "^1.22.2",
+    "readability": "https://github.com/mozilla/readability#dc34dfd8fa6d5c17801efbc2e115dc368b7117c8",
     "sanitize-html": "^1.22.1",
+    "shortid": "^2.2.15",
+    "simplemde-theme-base": "^0.2.1",
     "vue": "^2.5.16",
+    "vue-datetime": "^1.0.0-beta.11",
     "vue-electron": "^1.0.6",
+    "vue-markdown": "^2.2.4",
     "vue-router": "^3.0.1",
+    "vue-simplemde": "^1.0.4",
     "vuex": "^3.0.1",
     "vuex-electron": "^1.0.0"
   },
@@ -89,11 +95,12 @@
     "css-loader": "^0.28.11",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^2.0.4",
-    "electron-builder": "^20.19.2",
-    "electron-debug": "^1.5.0",
+    "electron": "^8.1.1",
+    "electron-builder": "^22.4.0",
+    "electron-debug": "^3.0.1",
     "electron-devtools-installer": "^2.2.4",
     "eslint": "^4.19.1",
+    "eslint-config-prettier": "^6.10.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^2.0.0",
@@ -102,6 +109,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
+    "eslint-plugin-vue": "^6.2.2",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "inject-loader": "^4.0.1",

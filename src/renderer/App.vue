@@ -1,21 +1,40 @@
 <template>
   <div id="app">
+    <titlebar />
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import Titlebar from "./components/Titlebar";
+
 export default {
-  name: "read_later"
+  name: "read_it_later",
+  components: {
+    Titlebar
+  }
 };
 </script>
 
 <style>
+@font-face {
+  font-family: Merriweather;
+  src: url(./assets/Merriweather-Regular.ttf);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-size: inherit;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
 }
 
 body,
@@ -23,11 +42,41 @@ html {
   width: 100%;
   height: 100%;
   font-size: 16px;
+  font-family: Merriweather;
+  color: #333;
+  overflow: hidden;
 }
 
-#app {
-  width: 100%;
-  height: 100%;
-  display: flex;
+ul,
+ol {
+  list-style-position: inside;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+a {
+  color: #333;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: bold;
+}
+
+button,
+input {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+input::placeholder {
+  font-size: 16px;
 }
 </style>
