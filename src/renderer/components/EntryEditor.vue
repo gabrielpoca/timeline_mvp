@@ -46,6 +46,7 @@ export default {
   padding: 0 8px;
   background: transparent;
   color: inherit;
+  border: 1px solid rgb(109, 109, 109);
 }
 
 .my-button {

@@ -22,6 +22,11 @@ export default {
   src: url(./assets/Merriweather-Regular.ttf);
 }
 
+@font-face {
+  font-family: "Zilla Slab";
+  src: url(./assets/Merriweather-Regular.ttf);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -42,7 +47,7 @@ html {
   width: 100%;
   height: 100%;
   font-size: 16px;
-  font-family: Merriweather;
+  font-family: "Zilla Slab";
   color: #333;
   overflow: hidden;
 }
@@ -68,6 +73,7 @@ h3,
 h4,
 h5 {
   font-weight: bold;
+  font-family: Merriweather;
 }
 
 button,

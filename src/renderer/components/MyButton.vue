@@ -19,6 +19,7 @@ export default {
 .my-button {
   background: none;
   border-radius: 4px;
+  border: 1px solid rgb(82, 82, 82);
   min-width: 100px;
   color: inherit;
 }

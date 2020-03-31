@@ -16,7 +16,8 @@ export default function readable(url, content) {
   const link = newDoc.window.document.createElement("link");
   link.rel = "stylesheet";
   link.href =
-    "https://fonts.googleapis.com/css?family=Merriweather|Open+Sans&display=swap";
+    "https://fonts.googleapis.com/css?family=Merriweather|Zilla+Slab&display=swap";
+
   newDoc.window.document.head.appendChild(link);
 
   const script = newDoc.window.document.createElement("script");
@@ -40,7 +41,7 @@ const css = `
           box-sizing: border-box;
           margin: 0;
           padding: 0;
-          font-size: 16px;
+          font-size: 20px;
           font-family: inherit;
         }
 
@@ -48,9 +49,9 @@ const css = `
         html {
           width: 100%;
           height: 100%;
-          font-size: 16px;
+          font-size: 20px;
           line-height: 1.4;
-          font-family: 'Open Sans', sans-serif;
+          font-family: 'Zilla Slab', sans-serif;
         }
 
         img {

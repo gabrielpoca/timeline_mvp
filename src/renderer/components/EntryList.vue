@@ -122,7 +122,7 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 0px 24px 24px;
+  padding: 40px 24px 24px;
 }
 
 .list {
@@ -133,7 +133,8 @@ export default {
 
 .list-entry {
   overflow-x: hidden;
-  border-left: 4px solid #333;
+  border-left: 1px solid #333;
+  border-left-style: dashed;
   padding: 8px 16px;
   margin-bottom: 24px;
 }
