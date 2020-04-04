@@ -1,8 +1,10 @@
 <template>
   <div v-if="entry" class="entry">
     <div class="nav">
-      <router-link :to="{ name: 'entryList' }">Back</router-link>
-      <div class="title" v-if="entry.title">{{ entry.title.slice(0, 70) }}...</div>
+      <router-link :to="{ name: 'entries' }">Back</router-link>
+      <div class="title" v-if="entry.title">
+        {{ entry.title.slice(0, 70) }}...
+      </div>
       <a href="#" v-on:click="remove">Delete</a>
     </div>
     <div class="inside">
@@ -34,28 +36,28 @@ export default {
   computed: {
     entry() {
       return this.$store.getters.entry(this.id);
-    }
+    },
   },
-  mounted: function() {
+  mounted: function () {
     window.addEventListener("message", this.onClick);
   },
-  beforeDestroy: function() {
+  beforeDestroy: function () {
     window.removeEventListener("message", this.onClick);
   },
   methods: {
-    onClick: function(event) {
+    onClick: function (event) {
       const { type, url } = event.data;
       if (type === "iframeClick") {
         if (url && !url.includes("localhost")) shell.openExternal(url);
       }
     },
-    remove: function() {
+    remove: function () {
       ipcRenderer.send("delete", this.id);
-      this.$router.push({ name: "entryList" });
+      this.$router.push({ name: "entries" });
     },
-    parse: function(url, content) {
+    parse: function (url, content) {
       const doc = new JSDOM(content, {
-        url
+        url,
       });
       const reader = new Readability(doc.window.document);
       const article = reader.parse();
@@ -67,8 +69,8 @@ export default {
       memoizedContent = readable(this.entry.url, this.entry.content);
       memoizedId = this.entry.id;
       return memoizedContent;
-    }
-  }
+    },
+  },
 };
 </script>
 

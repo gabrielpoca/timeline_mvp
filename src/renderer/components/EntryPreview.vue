@@ -66,7 +66,7 @@ export default {
       return format(new Date(this.entry.createdAt), "H:M - dd/MM");
     },
     updateDatetime() {
-      this.onChangeDatetime({ ...this.enty, createdAt: this.createdAt });
+      this.onChangeDatetime({ ...this.entry, createdAt: this.createdAt });
     }
   }
 };
