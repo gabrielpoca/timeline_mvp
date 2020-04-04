@@ -6,6 +6,7 @@
       <button class="nav-btn" v-if="hover" @click="onRemove(entry)">remove</button>
       <button @click="$refs.datetime.isOpen = true" class="nav-btn" v-if="hover">change date</button>
       <datetime
+        tabindex="-1"
         input-class="hidden"
         ref="datetime"
         type="datetime"
@@ -110,7 +111,7 @@ export default {
 
 .date {
   font-size: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   font-style: italic;
   color: #3b3b3b;
 }

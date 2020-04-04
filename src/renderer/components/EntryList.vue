@@ -17,6 +17,7 @@
       :onSubmit="onSubmit"
       :onCancel="onCancel"
       :onKeyDown="onKeyDown"
+      ref="editor"
     />
     <entry-editor
       v-else
@@ -25,6 +26,7 @@
       :onSubmit="onSubmit"
       :onCancel="onCancel"
       :onKeyDown="onKeyDown"
+      ref="editor"
     />
   </div>
 </template>
@@ -61,6 +63,12 @@ export default {
       return this.$store.getters.entries;
     }
   },
+  created() {
+    window.addEventListener("keydown", this.onKeyDown);
+  },
+  beforeDestroy() {
+    window.removeEventListener("keydown", this.onKeyDown);
+  },
   updated() {
     this.scrollToEnd();
   },
@@ -76,15 +84,35 @@ export default {
       this.$store.dispatch("update", entry);
     },
     onKeyDown(e) {
-      if (e.key !== "Enter" || !e.shiftKey) return;
-
-      if (this.type === "markdownNote") {
-        this.changeType("note");
-      } else {
-        this.changeType("markdownNote");
+      if (e.target === window.document.body) {
+        if (e.key === "i") {
+          setTimeout(() => this.$refs.editor.focus(), 0);
+        } else if (e.key === "e") {
+          this.onEdit(this.entries[this.entries.length - 1]);
+        } else {
+        }
       }
 
-      Vue.nextTick(() => this.scrollToEnd());
+      if (e.key === "Enter" && e.shiftKey) {
+        e.stopPropagation();
+
+        if (this.type === "markdownNote") {
+          this.changeType("note");
+        } else {
+          this.changeType("markdownNote");
+        }
+
+        Vue.nextTick(() => this.scrollToEnd());
+      }
+
+      if (e.key === "Escape") {
+        if (this.editing) this.onCancel();
+        e.target.blur();
+      }
+    },
+    onCancel() {
+      this.editing = null;
+      this.changeType("note");
     },
     scrollToEnd: function() {
       const content = this.$refs.list;
@@ -93,10 +121,6 @@ export default {
     changeType(type) {
       this.type = type;
       if (this.editing) this.editing.type = type;
-    },
-    onCancel() {
-      this.editing = null;
-      this.changeType("note");
     },
     async onSubmit(e) {
       e.preventDefault();
@@ -133,9 +157,6 @@ export default {
 
 .list-entry {
   overflow-x: hidden;
-  border-left: 1px solid #333;
-  border-left-style: dashed;
-  padding: 8px 16px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 </style>

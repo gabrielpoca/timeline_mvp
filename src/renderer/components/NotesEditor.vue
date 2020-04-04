@@ -35,6 +35,11 @@ export default {
         placeholder: "Type here..."
       }
     };
+  },
+  methods: {
+    focus() {
+      this.$refs.editor.simplemde.codemirror.focus();
+    }
   }
 };
 </script>

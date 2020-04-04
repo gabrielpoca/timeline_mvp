@@ -6,6 +6,7 @@
       @keydown="onKeyDown"
       class="input"
       type="text"
+      ref="input"
     />
     <my-button :onClick="onSubmit" :disabled="!value" type="submit">Save</my-button>
   </form>
@@ -16,6 +17,7 @@
     v-bind:onSubmit="onSubmit"
     v-bind:onCancel="onCancel"
     v-bind:keydown="onKeyDown"
+    ref="input"
   ></notes-editor>
 </template>
 
@@ -28,6 +30,11 @@ export default {
   components: {
     MyButton,
     NotesEditor
+  },
+  methods: {
+    focus() {
+      this.$refs.input.focus();
+    }
   }
 };
 </script>
