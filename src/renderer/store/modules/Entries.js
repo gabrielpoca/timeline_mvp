@@ -21,9 +21,6 @@ const mutations = {
   loadAll(state, entries) {
     state.entries = entries.sort(compare);
   },
-  remove(state, entryId) {
-    state.entries = state.entries.filter(({ id }) => id !== entryId);
-  },
   changeType(state, newType) {
     if (state.editing) state.editing.type = newType;
     else state.newType = newType;
@@ -34,6 +31,9 @@ const mutations = {
     } else {
       state.newContent = content;
     }
+  },
+  remove(state, entryId) {
+    state.entries = state.entries.filter(({ id }) => id !== entryId);
   },
   edit(state, entry) {
     state.editing = entry;
@@ -50,10 +50,10 @@ const mutations = {
 };
 
 const actions = {
-  async add({ commit, state, dispatch }, entry) {
+  async add({ commit, state }) {
     if (state.editing) {
       await globalEntries.update(state.editing);
-    } else {
+    } else if (!!state.newContent) {
       await globalEntries.add({ content: state.newContent });
     }
 

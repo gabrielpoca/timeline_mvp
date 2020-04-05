@@ -12,7 +12,6 @@
       ref="editor"
       :type="newType"
       :onSubmit="onSubmit"
-      :onCancel="onCancel"
       :onKeyDown="onKeyDown"
     />
   </div>
@@ -93,12 +92,13 @@ export default {
       }
 
       if (e.key === "Escape") {
-        this.onCancel();
+        this.$store.commit("cancel");
         e.target.blur();
       }
-    },
-    onCancel() {
-      this.$store.commit("cancel");
+
+      if (e.key === "Enter" && e.metaKey) {
+        this.$store.dispatch("add");
+      }
     },
     scrollToEnd: function () {
       this.$refs.list.scrollToEnd();

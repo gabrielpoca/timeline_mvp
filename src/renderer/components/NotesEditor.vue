@@ -7,10 +7,6 @@
       v-on:input="$emit('input', $event)"
       @keydown="keydown"
     />
-    <div>
-      <my-button :onClick="onSubmit" :disabled="!value">Save</my-button>
-      <my-button :onClick="onCancel">Cancel</my-button>
-    </div>
   </div>
 </template>
 
@@ -20,27 +16,27 @@ import VueSimplemde from "vue-simplemde";
 import MyButton from "./MyButton";
 
 export default {
-  props: ["value", "onSubmit", "onCancel", "keydown"],
+  props: ["value", "keydown"],
   components: {
     VueSimplemde,
-    MyButton
+    MyButton,
   },
-  data: function() {
+  data: function () {
     return {
       config: {
         autofocus: true,
         toolbar: false,
         toolbarTips: false,
         status: false,
-        placeholder: "Type here..."
-      }
+        placeholder: "Type here...",
+      },
     };
   },
   methods: {
     focus() {
       this.$refs.editor.simplemde.codemirror.focus();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -50,10 +46,6 @@ export default {
   flex-grow: 0;
   display: flex;
   flex-direction: column;
-}
-
-.my-button {
-  margin-top: 8px;
 }
 </style>
 

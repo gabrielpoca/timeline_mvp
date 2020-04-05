@@ -1,10 +1,28 @@
 <template>
-  <div @mouseleave="hover = false" @mouseover="hover = true">
+  <div
+    class="entry-preview"
+    @mouseleave="hover = false"
+    @mouseover="hover = true"
+  >
     <div class="date">
       {{ date() }}
-      <button class="nav-btn" v-if="hover && isTextNote()" @click="onEdit(entry)">edit</button>
-      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">remove</button>
-      <button @click="$refs.datetime.isOpen = true" class="nav-btn" v-if="hover">change date</button>
+      <button
+        class="nav-btn"
+        v-if="hover && isTextNote()"
+        @click="onEdit(entry)"
+      >
+        edit
+      </button>
+      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">
+        remove
+      </button>
+      <button
+        v-if="hover"
+        @click="$refs.datetime.isOpen = true"
+        class="nav-btn"
+      >
+        change date
+      </button>
       <datetime
         tabindex="-1"
         input-class="hidden"
@@ -16,18 +34,19 @@
     </div>
     <router-link
       v-if="entry.type === 'read'"
-      :to="{ name: 'readLater', params: { id: entry.id } }"
       class="link"
-    >{{ entry.title || entry.url }}</router-link>
+      :to="{ name: 'readLater', params: { id: entry.id } }"
+      >{{ entry.title || entry.url }}</router-link
+    >
     <button
       v-else-if="entry.type === 'link'"
-      @click="openExternalLink(entry.url)"
       class="link"
-    >{{ entry.url }}</button>
+      @click="openExternalLink(entry.url)"
+    >
+      {{ entry.url }}
+    </button>
     <image-preview v-else-if="entry.type === 'img'" :entry="entry" />
-    <span v-else>
-      <vue-markdown :source="entry.content" />
-    </span>
+    <vue-markdown v-else :source="entry.content" />
   </div>
 </template>
 
@@ -46,12 +65,12 @@ export default {
   components: {
     VueMarkdown,
     Datetime,
-    ImagePreview
+    ImagePreview,
   },
-  data: function() {
+  data: function () {
     return {
       hover: false,
-      createdAt: this.entry.createdAt.toString()
+      createdAt: this.entry.createdAt.toString(),
     };
   },
   methods: {
@@ -67,22 +86,12 @@ export default {
     },
     updateDatetime() {
       this.onChangeDatetime({ ...this.entry, createdAt: this.createdAt });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style>
-.hidden {
-  position: absolute !important;
-  height: 1px;
-  width: 1px;
-  overflow: hidden;
-  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
-  clip: rect(1px, 1px, 1px, 1px);
-  white-space: nowrap; /* added line */
-}
-
 .vdatetime-popup__header,
 .vdatetime-calendar__month__day--selected > span > span,
 .vdatetime-calendar__month__day--selected > span > span:hover {
@@ -100,28 +109,37 @@ export default {
 </style>
 
 <style scoped>
+.entry-preview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-x: hidden;
+}
+
 .nav-btn {
   background: none;
   border: none;
+  cursor: pointer;
   font-style: italic;
   margin-left: 8px;
-  cursor: pointer;
   text-decoration: underline;
 }
 
 .date {
-  font-size: 12px;
-  margin-bottom: 8px;
-  font-style: italic;
   color: #3b3b3b;
+  font-size: 12px;
+  font-style: italic;
+  line-height: 16px;
+  margin-bottom: 8px;
 }
 
 .link {
-  white-space: nowrap;
   background: none;
   border: 0;
-  text-decoration: underline;
   cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+  white-space: nowrap;
 }
 
 >>> h1 {
@@ -156,8 +174,9 @@ export default {
 }
 
 >>> pre {
-  background: #f0f0f0;
+  background: #f7f7f7;
   padding: 16px;
-  margin-left: 0px;
+  margin: 0px;
+  white-space: normal;
 }
 </style>
