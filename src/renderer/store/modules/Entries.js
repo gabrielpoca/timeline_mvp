@@ -1,10 +1,12 @@
 import { remote } from "electron";
-import { sortBy } from "lodash";
+import { sortBy, filter, includes } from "lodash";
 
 const globalEntries = remote.getGlobal("entries");
+window.globalEntries = globalEntries;
 
 const state = {
   entries: [],
+  searchResults: null,
   newContent: "",
   newType: "note",
   editing: null,
@@ -47,18 +49,26 @@ const mutations = {
     state.newContent = "";
     state.newType = "note";
   },
+  searchResults(state, results) {
+    state.searchResults = results;
+  },
 };
 
 const actions = {
-  async add({ commit, state }) {
+  async add({ commit, dispatch, state }) {
     if (state.editing) {
       await globalEntries.update(state.editing);
+      commit("loadAll", await globalEntries.loadAll());
+      commit("reset");
     } else if (!!state.newContent) {
-      await globalEntries.add({ content: state.newContent });
+      if (state.newContent.startsWith("/")) {
+        dispatch("search", state.newContent.replace("/", ""));
+      } else {
+        await globalEntries.add({ content: state.newContent });
+        commit("loadAll", await globalEntries.loadAll());
+        commit("reset");
+      }
     }
-
-    commit("loadAll", await globalEntries.loadAll());
-    commit("reset");
   },
   async update({ commit }, entry) {
     await globalEntries.update(entry);
@@ -72,14 +82,26 @@ const actions = {
     commit("edit", { ...entry });
     commit("changeType", "markdownNote");
   },
+  async search({ commit }, query) {
+    const results = await globalEntries.search(query);
+    commit("searchResults", results);
+  },
 };
 
 const getters = {
   newContent: (state) =>
     state.editing ? state.editing.content : state.newContent,
   newType: (state) => (state.editing ? state.editing.type : state.newType),
-  entries: (state) =>
-    sortBy(state.entries, ({ createdAt }) => new Date(createdAt)),
+  entries: (state) => {
+    let entries = state.entries;
+
+    if (state.searchResults) {
+      const ids = state.searchResults.map((r) => r.ref);
+      entries = filter(entries, (entry) => includes(ids, entry.id));
+    }
+
+    return sortBy(entries, ({ createdAt }) => new Date(createdAt));
+  },
   entry: (state) => (id) => {
     return state.entries.reduce((memo, entry) => {
       if (memo) return memo;

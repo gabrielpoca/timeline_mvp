@@ -45,7 +45,11 @@
     >
       {{ entry.url }}
     </button>
-    <image-preview v-else-if="entry.type === 'img'" :entry="entry" />
+    <image-preview
+      class="image"
+      v-else-if="entry.type === 'img'"
+      :entry="entry"
+    />
     <vue-markdown v-else :source="entry.content" />
   </div>
 </template>
@@ -140,6 +144,13 @@ export default {
   text-align: left;
   text-decoration: underline;
   white-space: nowrap;
+}
+
+.image {
+  max-height: 400px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left;
 }
 
 >>> h1 {

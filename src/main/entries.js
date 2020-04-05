@@ -2,16 +2,20 @@ import { ipcMain } from "electron";
 import axios from "axios";
 import shortid from "shortid";
 import { JSDOM } from "jsdom";
+import elasticlunr from "elasticlunr";
 
 import db from "./db";
 import * as images from "./images";
 
-export const update = async entry => {
-  return db
-    .get("entries")
-    .find({ id: entry.id })
-    .assign(entry)
-    .write();
+const index = elasticlunr(function () {
+  this.addField("createdAt");
+  this.addField("content");
+  this.setRef("id");
+  this.saveDocument(false);
+});
+
+export const update = async (entry) => {
+  return db.get("entries").find({ id: entry.id }).assign(entry).write();
 };
 
 export const add = async ({ content }) => {
@@ -32,39 +36,33 @@ export const add = async ({ content }) => {
   }
 };
 
-export const remove = async id => {
-  const entry = db
-    .get("entries")
-    .find({ id: id })
-    .value();
+export const remove = async (id) => {
+  const entry = db.get("entries").find({ id: id }).value();
 
   if (entry.type === "img") {
     await images.remove(entry.fileName);
   }
 
-  return db
-    .get("entries")
-    .remove({ id })
-    .write();
+  return db.get("entries").remove({ id }).write();
 };
 
 export const loadAll = () => {
   return db.get("entries").value();
 };
 
-ipcMain.on("loadAll", event => {
+ipcMain.on("loadAll", (event) => {
   const entries = db.get("entries").value();
   event.sender.send("loadAll", entries);
 });
 
-const addImage = async url => {
+const addImage = async (url) => {
   const { id, filePath, fileName } = await images.add(url);
   db.get("entries")
     .push({ type: "img", id, fileName, filePath, createdAt: new Date() })
     .write();
 };
 
-const addLink = async url => {
+const addLink = async (url) => {
   db.get("entries")
     .push({ type: "link", id: shortid.generate(), url, createdAt: new Date() })
     .write();
@@ -76,12 +74,12 @@ const addNote = async ({ content }) => {
       type: "note",
       id: shortid.generate(),
       content,
-      createdAt: new Date()
+      createdAt: new Date(),
     })
     .write();
 };
 
-const addRead = async url => {
+const addRead = async (url) => {
   const response = await axios.get(url);
   const dom = new JSDOM(response.data);
   const author = dom.window.document.querySelector('meta[name="author"]')
@@ -96,7 +94,13 @@ const addRead = async url => {
       title: dom.window.document.title,
       author,
       type: "read",
-      createdAt: new Date()
+      createdAt: new Date(),
     })
     .write();
+};
+
+loadAll().map((entry) => index.addDoc(entry));
+
+export const search = async (query) => {
+  return index.search(query);
 };
