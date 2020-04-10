@@ -9,7 +9,7 @@ const state = {
   searchResults: null,
   newContent: "",
   newType: "note",
-  editing: null,
+  editing: null
 };
 
 function compare(a, b) {
@@ -51,7 +51,7 @@ const mutations = {
   },
   searchResults(state, results) {
     state.searchResults = results;
-  },
+  }
 };
 
 const actions = {
@@ -70,6 +70,12 @@ const actions = {
       }
     }
   },
+  async addFiles({ commit }, files) {
+    for (let file of files) {
+      await globalEntries.addFile(file);
+    }
+    commit("loadAll", await globalEntries.loadAll());
+  },
   async update({ commit }, entry) {
     await globalEntries.update(entry);
     commit("loadAll", await globalEntries.loadAll());
@@ -85,35 +91,35 @@ const actions = {
   async search({ commit }, query) {
     const results = await globalEntries.search(query);
     commit("searchResults", results);
-  },
+  }
 };
 
 const getters = {
-  newContent: (state) =>
+  newContent: state =>
     state.editing ? state.editing.content : state.newContent,
-  newType: (state) => (state.editing ? state.editing.type : state.newType),
-  entries: (state) => {
+  newType: state => (state.editing ? state.editing.type : state.newType),
+  entries: state => {
     let entries = state.entries;
 
     if (state.searchResults) {
-      const ids = state.searchResults.map((r) => r.ref);
-      entries = filter(entries, (entry) => includes(ids, entry.id));
+      const ids = state.searchResults.map(r => r.ref);
+      entries = filter(entries, entry => includes(ids, entry.id));
     }
 
     return sortBy(entries, ({ createdAt }) => new Date(createdAt));
   },
-  entry: (state) => (id) => {
+  entry: state => id => {
     return state.entries.reduce((memo, entry) => {
       if (memo) return memo;
       if (entry.id === id) return entry;
       return null;
     }, null);
-  },
+  }
 };
 
 export default {
   state,
   mutations,
   actions,
-  getters,
+  getters
 };

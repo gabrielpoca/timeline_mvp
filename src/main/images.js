@@ -23,17 +23,30 @@ function getExtension(contentType) {
   }
 }
 
-export const add = async url => {
+export const addRemoteFile = async url => {
   const id = shortid();
 
   const response = await axios.get(url, { responseType: "arraybuffer" });
 
   const ext = getExtension(response.headers["content-type"]);
   const fileName = `${id}.${ext}`;
+
   const filePath = path.join(imagesFolder, fileName);
   await fsPromises.writeFile(filePath, response.data);
 
   return { id, filePath, fileName };
+};
+
+export const addLocalFile = async file => {
+  const id = shortid();
+
+  const data = await fsPromises.readFile(file.path);
+
+  const fileName = id + file.name;
+  const filePath = path.join(imagesFolder, fileName);
+  await fsPromises.writeFile(filePath, data);
+
+  return { id, filePath, fileName: fileName };
 };
 
 export const get = async fileName => {
@@ -41,5 +54,9 @@ export const get = async fileName => {
 };
 
 export const remove = async fileName => {
-  return await fsPromises.unlink(path.join(imagesFolder, fileName));
+  try {
+    await fsPromises.unlink(path.join(imagesFolder, fileName));
+  } catch (e) {
+    console.error(e);
+  }
 };

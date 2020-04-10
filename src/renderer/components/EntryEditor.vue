@@ -29,16 +29,16 @@ export default {
   props: ["value", "type", "onSubmit", "onKeyDown"],
   components: {
     MyButton,
-    NotesEditor,
+    NotesEditor
   },
-  data: function () {
+  data: function() {
     return { focused: false };
   },
   methods: {
     focus() {
       this.$refs.input.focus();
-    },
-  },
+    }
+  }
 };
 </script>
 

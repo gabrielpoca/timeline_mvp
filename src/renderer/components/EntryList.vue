@@ -19,14 +19,14 @@ import EntryPreview from "./EntryPreview";
 export default {
   props: ["entries", "onEdit", "onRemove", "onChangeDatetime"],
   components: {
-    EntryPreview,
+    EntryPreview
   },
   methods: {
-    scrollToEnd: function () {
+    scrollToEnd: function() {
       const content = this.$refs.list;
       content.scrollTop = content.scrollHeight;
-    },
-  },
+    }
+  }
 };
 </script>
 

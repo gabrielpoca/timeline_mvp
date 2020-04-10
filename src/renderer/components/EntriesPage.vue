@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div ref="home" class="home">
     <entry-list
       ref="list"
       :entries="entries"
@@ -28,13 +28,13 @@ export default {
   name: "entries-page",
   components: {
     EntryEditor,
-    EntryList,
+    EntryList
   },
   computed: {
     entries: {
       get() {
         return this.$store.getters.entries;
-      },
+      }
     },
     newContent: {
       get() {
@@ -42,16 +42,37 @@ export default {
       },
       set(value) {
         this.$store.commit("updateContent", value);
-      },
+      }
     },
     newType: {
       get() {
         return this.$store.getters.newType;
-      },
-    },
+      }
+    }
   },
   created() {
     window.addEventListener("keydown", this.onKeyDown);
+  },
+  mounted() {
+    console.log(this.$refs.home);
+
+    this.$refs.home.ondragover = () => {
+      return false;
+    };
+
+    this.$refs.home.ondragleave = () => {
+      return false;
+    };
+
+    this.$refs.home.ondragend = () => {
+      return false;
+    };
+
+    this.$refs.home.ondrop = e => {
+      e.preventDefault();
+      this.$store.dispatch("addFiles", e.dataTransfer.files);
+      return false;
+    };
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.onKeyDown);
@@ -100,14 +121,14 @@ export default {
         this.$store.dispatch("add");
       }
     },
-    scrollToEnd: function () {
+    scrollToEnd: function() {
       this.$refs.list.scrollToEnd();
     },
     async onSubmit(e) {
       e.preventDefault();
       this.$store.dispatch("add");
-    },
-  },
+    }
+  }
 };
 </script>
 
