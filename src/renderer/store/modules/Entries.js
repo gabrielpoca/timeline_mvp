@@ -1,15 +1,17 @@
 import { remote } from "electron";
-import { sortBy, filter, includes } from "lodash";
+import { sortBy, filter, includes, debounce } from "lodash";
 
 const globalEntries = remote.getGlobal("entries");
 window.globalEntries = globalEntries;
 
 const state = {
   entries: [],
+  searchQuery: "",
   searchResults: null,
   newContent: "",
   newType: "note",
-  editing: null
+  editing: null,
+  mode: "normal"
 };
 
 function compare(a, b) {
@@ -34,6 +36,9 @@ const mutations = {
       state.newContent = content;
     }
   },
+  searchQuery(state, query) {
+    state.searchQuery = query;
+  },
   remove(state, entryId) {
     state.entries = state.entries.filter(({ id }) => id !== entryId);
   },
@@ -43,6 +48,7 @@ const mutations = {
   cancel(state) {
     state.editing = null;
     state.newType = "note";
+    state.mode = "normal";
   },
   reset(state) {
     state.editing = null;
@@ -51,6 +57,9 @@ const mutations = {
   },
   searchResults(state, results) {
     state.searchResults = results;
+  },
+  mode(state, mode) {
+    state.mode = mode;
   }
 };
 
@@ -61,13 +70,9 @@ const actions = {
       commit("loadAll", await globalEntries.loadAll());
       commit("reset");
     } else if (!!state.newContent) {
-      if (state.newContent.startsWith("/")) {
-        dispatch("search", state.newContent.replace("/", ""));
-      } else {
-        await globalEntries.add({ content: state.newContent });
-        commit("loadAll", await globalEntries.loadAll());
-        commit("reset");
-      }
+      await globalEntries.add({ content: state.newContent });
+      commit("loadAll", await globalEntries.loadAll());
+      commit("reset");
     }
   },
   async addFiles({ commit }, files) {
@@ -88,20 +93,28 @@ const actions = {
     commit("edit", { ...entry });
     commit("changeType", "markdownNote");
   },
-  async search({ commit }, query) {
-    if (!query) {
-      return commit("searchResults", null);
-    }
+  search: debounce(
+    async ({ commit }, searchQuery) => {
+      console.log("searching");
+      commit("searchQuery", searchQuery);
 
-    const results = await globalEntries.search(query);
-    commit("searchResults", results);
-  }
+      if (!searchQuery) {
+        return commit("searchResults", null);
+      }
+
+      const results = await globalEntries.search(searchQuery);
+      commit("searchResults", results);
+    },
+    200,
+    { leading: false, trailing: true }
+  )
 };
 
 const getters = {
   newContent: state =>
     state.editing ? state.editing.content : state.newContent,
   newType: state => (state.editing ? state.editing.type : state.newType),
+  searchQuery: state => state.searchQuery,
   entries: state => {
     let entries = state.entries;
 
@@ -118,7 +131,8 @@ const getters = {
       if (entry.id === id) return entry;
       return null;
     }, null);
-  }
+  },
+  mode: state => state.mode
 };
 
 export default {
