@@ -1,5 +1,10 @@
 <template>
-  <img class="img" :src="src" />
+  <div>
+    <img @click="modal = true" class="img" :src="src" />
+    <div v-if="modal === true" @click="modal = false" class="modal">
+      <img class="bigImage" :src="src" />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -11,7 +16,8 @@ export default {
   props: ["entry"],
   data: function() {
     return {
-      src: null
+      src: null,
+      modal: false
     };
   },
   created() {
@@ -30,5 +36,31 @@ export default {
 .img {
   max-width: 100%;
   width: 100%;
+  cursor: pointer;
+  max-height: 400px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left;
+}
+
+.modal {
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.bigImage {
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>

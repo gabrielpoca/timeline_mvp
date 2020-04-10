@@ -1,28 +1,10 @@
 <template>
-  <div
-    class="entry-preview"
-    @mouseleave="hover = false"
-    @mouseover="hover = true"
-  >
+  <div class="entry-preview" @mouseleave="hover = false" @mouseover="hover = true">
     <div class="date">
       {{ date() }}
-      <button
-        class="nav-btn"
-        v-if="hover && isTextNote()"
-        @click="onEdit(entry)"
-      >
-        edit
-      </button>
-      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">
-        remove
-      </button>
-      <button
-        v-if="hover"
-        @click="$refs.datetime.isOpen = true"
-        class="nav-btn"
-      >
-        change date
-      </button>
+      <button class="nav-btn" v-if="hover && isTextNote()" @click="onEdit(entry)">edit</button>
+      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">remove</button>
+      <button v-if="hover" @click="$refs.datetime.isOpen = true" class="nav-btn">change date</button>
       <datetime
         tabindex="-1"
         input-class="hidden"
@@ -36,20 +18,13 @@
       v-if="entry.type === 'read'"
       class="link"
       :to="{ name: 'readLater', params: { id: entry.id } }"
-      >{{ entry.title || entry.url }}</router-link
-    >
+    >{{ entry.title || entry.url }}</router-link>
     <button
       v-else-if="entry.type === 'link'"
       class="link"
       @click="openExternalLink(entry.url)"
-    >
-      {{ entry.url }}
-    </button>
-    <image-preview
-      class="image"
-      v-else-if="entry.type === 'img'"
-      :entry="entry"
-    />
+    >{{ entry.url }}</button>
+    <image-preview v-else-if="entry.type === 'img'" :entry="entry" />
     <vue-markdown v-else :source="entry.content" />
   </div>
 </template>
@@ -69,12 +44,12 @@ export default {
   components: {
     VueMarkdown,
     Datetime,
-    ImagePreview,
+    ImagePreview
   },
-  data: function () {
+  data: function() {
     return {
       hover: false,
-      createdAt: this.entry.createdAt.toString(),
+      createdAt: this.entry.createdAt.toString()
     };
   },
   methods: {
@@ -90,8 +65,8 @@ export default {
     },
     updateDatetime() {
       this.onChangeDatetime({ ...this.entry, createdAt: this.createdAt });
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -144,13 +119,6 @@ export default {
   text-align: left;
   text-decoration: underline;
   white-space: nowrap;
-}
-
-.image {
-  max-height: 400px;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: left;
 }
 
 >>> h1 {

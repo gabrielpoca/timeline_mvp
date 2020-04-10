@@ -89,6 +89,10 @@ const actions = {
     commit("changeType", "markdownNote");
   },
   async search({ commit }, query) {
+    if (!query) {
+      return commit("searchResults", null);
+    }
+
     const results = await globalEntries.search(query);
     commit("searchResults", results);
   }
