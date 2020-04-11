@@ -1,10 +1,28 @@
 <template>
-  <div class="entry-preview" @mouseleave="hover = false" @mouseover="hover = true">
+  <div
+    class="entry-preview"
+    @mouseleave="hover = false"
+    @mouseover="hover = true"
+  >
     <div class="date">
       {{ date() }}
-      <button class="nav-btn" v-if="hover && isTextNote()" @click="onEdit(entry)">edit</button>
-      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">remove</button>
-      <button v-if="hover" @click="$refs.datetime.isOpen = true" class="nav-btn">change date</button>
+      <button
+        class="nav-btn"
+        v-if="hover && isTextNote()"
+        @click="onEdit(entry)"
+      >
+        edit
+      </button>
+      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">
+        remove
+      </button>
+      <button
+        v-if="hover"
+        @click="$refs.datetime.isOpen = true"
+        class="nav-btn"
+      >
+        change date
+      </button>
       <datetime
         tabindex="-1"
         input-class="hidden"
@@ -18,14 +36,17 @@
       v-if="entry.type === 'read'"
       class="link"
       :to="{ name: 'readLater', params: { id: entry.id } }"
-    >{{ entry.title || entry.url }}</router-link>
+      >{{ entry.title || entry.url }}</router-link
+    >
     <button
       v-else-if="entry.type === 'link'"
       class="link"
       @click="openExternalLink(entry.url)"
-    >{{ entry.url }}</button>
+    >
+      {{ entry.url }}
+    </button>
     <image-preview v-else-if="entry.type === 'img'" :entry="entry" />
-    <vue-markdown v-else :source="entry.content" />
+    <vue-markdown v-else :source="entry.previewContent || entry.content" />
   </div>
 </template>
 

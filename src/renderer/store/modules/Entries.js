@@ -1,5 +1,5 @@
 import { remote } from "electron";
-import { sortBy, filter, includes, debounce, map, chain } from "lodash";
+import { filter, includes, debounce, map, chain } from "lodash";
 
 const globalEntries = remote.getGlobal("entries");
 window.globalEntries = globalEntries;
@@ -23,32 +23,7 @@ function compare(a, b) {
 
 const mutations = {
   loadAll(state, entries) {
-    const tags = chain(entries)
-      .filter({ type: "markdownNote" })
-      .reduce((memo, entry) => {
-        map(entry.content.match(/\@[^ \n]+/g), match => {
-          memo[match] = true;
-        });
-
-        return memo;
-      }, {})
-      .keys()
-      .value();
-
-    state.entries = entries
-      .map(entry => {
-        if (entry.type !== "markdownNote") return entry;
-
-        const content = tags.reduce((memo, tag, index) => {
-          return memo.replace(
-            tag,
-            `<span class="highlight-${index}">${tag}</span>`
-          );
-        }, entry.content);
-
-        return { ...entry, content };
-      })
-      .sort(compare);
+    state.entries = entries;
   },
   changeType(state, newType) {
     if (state.editing) state.editing.type = newType;
@@ -148,7 +123,33 @@ const getters = {
       entries = filter(entries, entry => includes(ids, entry.id));
     }
 
-    return sortBy(entries, ({ createdAt }) => new Date(createdAt));
+    const tags = chain(entries)
+      .filter({ type: "markdownNote" })
+      .reduce((memo, entry) => {
+        map(entry.content.match(/\@[^ \n]+/g), match => {
+          memo[match] = true;
+        });
+
+        return memo;
+      }, {})
+      .keys()
+      .orderBy(tag => tag.length, "desc")
+      .value();
+
+    return entries
+      .map(entry => {
+        if (entry.type !== "markdownNote") return entry;
+
+        const previewContent = tags.reduce((memo, tag, index) => {
+          return memo.replace(
+            new RegExp(`${tag}\\b`),
+            `<span class="highlight-${index}">${tag}</span>`
+          );
+        }, entry.content);
+
+        return { ...entry, previewContent };
+      })
+      .sort(compare);
   },
   entry: state => id => {
     return state.entries.reduce((memo, entry) => {
