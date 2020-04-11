@@ -51,7 +51,6 @@ export default {
         return this.$store.getters.searchQuery;
       },
       set(value) {
-        // this.$store.commit("searchQuery", value);
         this.$store.dispatch("search", value);
       }
     },

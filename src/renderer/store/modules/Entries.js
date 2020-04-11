@@ -1,5 +1,5 @@
 import { remote } from "electron";
-import { sortBy, filter, includes, debounce } from "lodash";
+import { sortBy, filter, includes, debounce, map, chain } from "lodash";
 
 const globalEntries = remote.getGlobal("entries");
 window.globalEntries = globalEntries;
@@ -23,7 +23,32 @@ function compare(a, b) {
 
 const mutations = {
   loadAll(state, entries) {
-    state.entries = entries.sort(compare);
+    const tags = chain(entries)
+      .filter({ type: "markdownNote" })
+      .reduce((memo, entry) => {
+        map(entry.content.match(/\@[^ \n]+/g), match => {
+          memo[match] = true;
+        });
+
+        return memo;
+      }, {})
+      .keys()
+      .value();
+
+    state.entries = entries
+      .map(entry => {
+        if (entry.type !== "markdownNote") return entry;
+
+        const content = tags.reduce((memo, tag, index) => {
+          return memo.replace(
+            tag,
+            `<span class="highlight-${index}">${tag}</span>`
+          );
+        }, entry.content);
+
+        return { ...entry, content };
+      })
+      .sort(compare);
   },
   changeType(state, newType) {
     if (state.editing) state.editing.type = newType;
@@ -64,7 +89,7 @@ const mutations = {
 };
 
 const actions = {
-  async add({ commit, dispatch, state }) {
+  async add({ commit, state }) {
     if (state.editing) {
       await globalEntries.update(state.editing);
       commit("loadAll", await globalEntries.loadAll());
@@ -90,12 +115,12 @@ const actions = {
     commit("remove", id);
   },
   edit({ commit }, entry) {
+    commit("mode", "insert");
     commit("edit", { ...entry });
     commit("changeType", "markdownNote");
   },
   search: debounce(
     async ({ commit }, searchQuery) => {
-      console.log("searching");
       commit("searchQuery", searchQuery);
 
       if (!searchQuery) {

@@ -158,4 +158,39 @@ export default {
   margin: 0px;
   white-space: normal;
 }
+
+>>> .highlight-0 {
+  color: #c9883f !important;
+}
+
+>>> .highlight-1 {
+  color: #aa2b2b !important;
+}
+
+>>> .highlight-2 {
+  color: #1815c5 !important;
+}
+
+>>> .highlight-3 {
+  color: #6eb468 !important;
+}
+
+>>> .highlight-4 {
+  color: #53838f !important;
+}
+
+>>> .highlight-5 {
+  color: #95a0ff !important;
+}
+
+>>> .highlight-6 {
+  color: #ed95ff !important;
+}
+
+>>> [class^="highlight-"] {
+  font-weight: bold;
+  font-size: inherit;
+  line-height: inherit;
+  color: rgb(196, 196, 196);
+}
 </style>
