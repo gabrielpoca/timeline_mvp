@@ -3,10 +3,11 @@
     <ul class="list">
       <li class="list-entry" v-for="entry in entries" :key="entry.id">
         <entry-preview
+          :selected="entry.id === selectedEntry"
           :entry="entry"
           :onEdit="onEdit"
-          :onRemove="onRemove"
-          :onChangeDatetime="onChangeDatetime"
+          :scrollToElement="scrollToElement"
+          v-on:entry:loaded="scrollToEnd"
         />
       </li>
     </ul>
@@ -14,18 +15,51 @@
 </template>
 
 <script>
+import Vue from "vue";
+import { debounce } from "lodash";
+
 import EntryPreview from "./EntryPreview";
 
 export default {
-  props: ["entries", "onEdit", "onRemove", "onChangeDatetime"],
+  props: ["entries", "onEdit"],
   components: {
     EntryPreview
   },
-  methods: {
-    scrollToEnd: function() {
-      const content = this.$refs.list;
-      content.scrollTop = content.scrollHeight;
+  created() {
+    this.scrollToEnd();
+  },
+  computed: {
+    selectedEntry: {
+      get() {
+        return this.$store.getters.selectedEntry;
+      },
+      set(value) {
+        this.$store.commit("selectedEntry", value);
+      }
     }
+  },
+  methods: {
+    scrollToElement: debounce(
+      function(el) {
+        el.scrollIntoView({
+          block: "end",
+          inline: "nearest"
+        });
+      },
+      10,
+      {
+        leading: false,
+        trailing: true
+      }
+    ),
+    scrollToEnd: debounce(
+      function() {
+        const content = this.$refs.list;
+        content.scrollTop = content.scrollHeight;
+      },
+      200,
+      { leading: false, trailing: true }
+    )
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <form class="form" @submit="onSubmit">
+  <form class="form" @submit="onSearch">
     <div class="tick" v-bind:class="{ hidden: !focused && !value }">/</div>
     <input
       :value="value"
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  props: ["value", "onSubmit", "onKeyDown"],
+  props: ["value", "onKeyDown"],
 
   data: function() {
     return { focused: false };
@@ -24,6 +24,10 @@ export default {
   methods: {
     focus() {
       this.$refs.input.focus();
+    },
+    onSearch(e) {
+      e.preventDefault();
+      this.$store.dispatch("search");
     }
   }
 };
@@ -35,7 +39,7 @@ export default {
   flex-basis: 32px;
   flex-shrink: 0;
   flex-grow: 0;
-  padding-top: 16px;
+  padding: 16px 24px 0;
   flex-basis: 40px;
   align-items: center;
 }

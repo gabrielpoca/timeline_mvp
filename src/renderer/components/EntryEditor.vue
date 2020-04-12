@@ -1,9 +1,8 @@
 <template>
-  <form v-if="type === 'note'" class="form" @submit="onSubmit">
-    <div class="tick" v-bind:class="{ hidden: !focused && !value }">:</div>
+  <form v-if="newType === 'note'" class="form" @submit="onSubmit">
+    <div class="tick" v-bind:class="{ hidden: !focused && !newContent }">:</div>
     <input
-      :value="value"
-      @input="$emit('input', $event.target.value)"
+      v-model="newContent"
       @keydown="onKeyDown"
       @focus="focused = true"
       @blur="focused = false"
@@ -14,8 +13,7 @@
   </form>
   <notes-editor
     v-else
-    :value="value"
-    v-on:input="$emit('input', $event)"
+    v-model="newContent"
     v-bind:keydown="onKeyDown"
     ref="input"
   ></notes-editor>
@@ -26,10 +24,25 @@ import MyButton from "./MyButton";
 import NotesEditor from "./NotesEditor";
 
 export default {
-  props: ["value", "type", "onSubmit", "onKeyDown"],
+  props: ["onKeyDown"],
   components: {
     MyButton,
     NotesEditor
+  },
+  computed: {
+    newContent: {
+      get() {
+        return this.$store.getters.newContent;
+      },
+      set(value) {
+        this.$store.commit("updateContent", value);
+      }
+    },
+    newType: {
+      get() {
+        return this.$store.getters.newType;
+      }
+    }
   },
   data: function() {
     return { focused: false };
@@ -37,6 +50,10 @@ export default {
   methods: {
     focus() {
       this.$refs.input.focus();
+    },
+    async onSubmit(e) {
+      e.preventDefault();
+      this.$store.dispatch("add");
     }
   }
 };
@@ -48,7 +65,7 @@ export default {
   flex-basis: 32px;
   flex-shrink: 0;
   flex-grow: 0;
-  padding-top: 16px;
+  padding: 16px 24px 0;
   flex-basis: 40px;
   align-items: center;
 }

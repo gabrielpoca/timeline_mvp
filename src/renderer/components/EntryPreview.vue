@@ -1,8 +1,9 @@
 <template>
   <div
-    class="entry-preview"
+    :class="{ 'entry-preview': true, 'entry-selected': selected }"
     @mouseleave="hover = false"
     @mouseover="hover = true"
+    ref="entryPreview"
   >
     <div class="date">
       {{ date() }}
@@ -13,7 +14,7 @@
       >
         edit
       </button>
-      <button class="nav-btn" v-if="hover" @click="onRemove(entry)">
+      <button class="nav-btn" v-if="hover" @click="onRemove">
         remove
       </button>
       <button
@@ -45,7 +46,11 @@
     >
       {{ entry.url }}
     </button>
-    <image-preview v-else-if="entry.type === 'img'" :entry="entry" />
+    <image-preview
+      v-on:entry:loaded="$emit('entry:loaded')"
+      v-else-if="entry.type === 'img'"
+      :entry="entry"
+    />
     <vue-markdown v-else :source="entry.previewContent || entry.content" />
   </div>
 </template>
@@ -61,7 +66,7 @@ import "vue-datetime/dist/vue-datetime.css";
 import ImagePreview from "./ImagePreview";
 
 export default {
-  props: ["entry", "onEdit", "onRemove", "onChangeDatetime"],
+  props: ["entry", "onEdit", "selected", "scrollToElement"],
   components: {
     VueMarkdown,
     Datetime,
@@ -72,6 +77,11 @@ export default {
       hover: false,
       createdAt: this.entry.createdAt.toString()
     };
+  },
+  watch: {
+    selected: function() {
+      this.scrollToElement(this.$refs.entryPreview);
+    }
   },
   methods: {
     openExternalLink(url) {
@@ -86,6 +96,12 @@ export default {
     },
     updateDatetime() {
       this.onChangeDatetime({ ...this.entry, createdAt: this.createdAt });
+    },
+    onChangeDatetime() {
+      this.$store.dispatch("update", this.entry);
+    },
+    onRemove() {
+      this.$store.dispatch("remove", this.entry.id);
     }
   }
 };
@@ -109,7 +125,14 @@ export default {
 </style>
 
 <style scoped>
+.entry-selected {
+  border-color: #7c7c7c !important;
+}
+
 .entry-preview {
+  padding: 0 11px;
+  margin: 0 13px;
+  border-left: 1px dashed transparent;
   display: flex;
   flex-direction: column;
   flex: 1;

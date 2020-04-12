@@ -19,24 +19,24 @@ export default {
   props: ["value", "keydown"],
   components: {
     VueSimplemde,
-    MyButton,
+    MyButton
   },
-  data: function () {
+  data: function() {
     return {
       config: {
         autofocus: true,
         toolbar: false,
         toolbarTips: false,
         status: false,
-        placeholder: "Type here...",
-      },
+        placeholder: "Type here..."
+      }
     };
   },
   methods: {
     focus() {
       this.$refs.editor.simplemde.codemirror.focus();
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -46,6 +46,7 @@ export default {
   flex-grow: 0;
   display: flex;
   flex-direction: column;
+  padding: 0 24px;
 }
 </style>
 

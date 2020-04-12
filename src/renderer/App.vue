@@ -11,8 +11,8 @@ import Titlebar from "./components/Titlebar";
 export default {
   name: "read_it_later",
   components: {
-    Titlebar,
-  },
+    Titlebar
+  }
 };
 </script>
 

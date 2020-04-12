@@ -1,25 +1,15 @@
 <template>
   <div ref="home" class="home">
-    <entry-list
-      ref="list"
-      :entries="entries"
-      :onEdit="onEdit"
-      :onRemove="onRemove"
-      :onChangeDatetime="onChangeDatetime"
-    />
+    <entry-list ref="list" :entries="entries" :onEdit="onEdit" />
     <entry-editor
       v-if="mode === 'insert'"
-      v-model="newContent"
       ref="editor"
-      :type="newType"
-      :onSubmit="onSubmit"
       :onKeyDown="onKeyDown"
     />
     <search-editor
       v-else-if="mode === 'search'"
       v-model="searchQuery"
       ref="search"
-      :onSubmit="onSearch"
       :onKeyDown="onKeyDown"
     />
   </div>
@@ -52,19 +42,6 @@ export default {
       },
       set(value) {
         this.$store.dispatch("search", value);
-      }
-    },
-    newContent: {
-      get() {
-        return this.$store.getters.newContent;
-      },
-      set(value) {
-        this.$store.commit("updateContent", value);
-      }
-    },
-    newType: {
-      get() {
-        return this.$store.getters.newType;
       }
     },
     mode: {
@@ -101,22 +78,9 @@ export default {
   beforeDestroy() {
     window.removeEventListener("keydown", this.onKeyDown);
   },
-  updated() {
-    this.scrollToEnd();
-  },
   methods: {
     onEdit(entry) {
       this.$store.dispatch("edit", entry);
-    },
-    onRemove(entry) {
-      this.$store.dispatch("remove", entry.id);
-    },
-    onChangeDatetime(entry) {
-      this.$store.dispatch("update", entry);
-    },
-    onSearch(e) {
-      e.preventDefault();
-      this.$store.dispatch("search");
     },
     onKeyDown(e) {
       if (e.target === window.document.body) {
@@ -127,21 +91,18 @@ export default {
           this.mode = "search";
           setTimeout(() => this.$refs.search.focus(), 0);
         } else if (e.key === "e") {
-          this.mode = "insert";
-          this.onEdit(this.entries[this.entries.length - 1]);
+          this.onEdit();
+        } else if (e.key === "j" || e.key === "ArrowDown") {
+          this.$store.dispatch("selectDown");
+        } else if (e.key === "k" || e.key === "ArrowUp") {
+          this.$store.dispatch("selectUp");
         }
       }
 
       if (this.mode === "insert") {
         if (e.key === "Enter" && e.shiftKey) {
           e.stopPropagation();
-
-          if (this.newType === "markdownNote") {
-            this.$store.commit("changeType", "note");
-          } else {
-            this.$store.commit("changeType", "markdownNote");
-          }
-
+          this.$store.commit("changeType");
           Vue.nextTick(() => this.scrollToEnd());
         }
 
@@ -157,10 +118,6 @@ export default {
     },
     scrollToEnd: function() {
       this.$refs.list.scrollToEnd();
-    },
-    async onSubmit(e) {
-      e.preventDefault();
-      this.$store.dispatch("add");
     }
   }
 };
@@ -171,7 +128,7 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 40px 24px 24px;
+  padding: 40px 0 24px;
 }
 
 .list {

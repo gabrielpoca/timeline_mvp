@@ -27,6 +27,7 @@ export default {
     async loadImage() {
       const buf = await globalImages.get(this.entry.fileName);
       this.src = "data:image/jpeg;base64," + buf.toString("base64");
+      this.$emit("entry:loaded");
     }
   }
 };
