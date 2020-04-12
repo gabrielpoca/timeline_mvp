@@ -75,6 +75,8 @@ const mutations = {
 
 const actions = {
   selectUp({ state, commit, getters }) {
+    if (state.mode !== "normal") return;
+
     if (!state.selectedEntry)
       return commit(
         "selectedEntry",
@@ -86,6 +88,8 @@ const actions = {
     commit("selectedEntry", newSelectedEntry);
   },
   selectDown({ state, commit, getters }) {
+    if (state.mode !== "normal") return;
+
     if (!state.selectedEntry)
       return commit(
         "selectedEntry",
@@ -107,6 +111,8 @@ const actions = {
       commit("loadAll", await globalEntries.loadAll());
       commit("reset");
     }
+
+    commit("mode", "normal");
   },
   async addFiles({ commit }, files) {
     for (let file of files) {
