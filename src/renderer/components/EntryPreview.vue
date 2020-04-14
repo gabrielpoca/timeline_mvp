@@ -7,23 +7,9 @@
   >
     <div class="date">
       {{ date() }}
-      <button
-        class="nav-btn"
-        v-if="hover && isTextNote()"
-        @click="onEdit(entry)"
-      >
-        edit
-      </button>
-      <button class="nav-btn" v-if="hover" @click="onRemove">
-        remove
-      </button>
-      <button
-        v-if="hover"
-        @click="$refs.datetime.isOpen = true"
-        class="nav-btn"
-      >
-        change date
-      </button>
+      <button class="nav-btn" v-if="hover && isTextNote()" @click="onEdit(entry)">edit</button>
+      <button class="nav-btn" v-if="hover" @click="onRemove">remove</button>
+      <button v-if="hover" @click="$refs.datetime.isOpen = true" class="nav-btn">change date</button>
       <datetime
         tabindex="-1"
         input-class="hidden"
@@ -37,15 +23,8 @@
       v-if="entry.type === 'read'"
       class="link"
       :to="{ name: 'readLater', params: { id: entry.id } }"
-      >{{ entry.title || entry.url }}</router-link
-    >
-    <button
-      v-else-if="entry.type === 'link'"
-      class="link"
-      @click="openExternalLink(entry.url)"
-    >
-      {{ entry.url }}
-    </button>
+    >{{ entry.title || entry.url }}</router-link>
+
     <image-preview
       v-on:entry:loaded="$emit('entry:loaded')"
       v-else-if="entry.type === 'img'"
@@ -57,7 +36,6 @@
 
 <script>
 import VueMarkdown from "vue-markdown";
-import { shell } from "electron";
 import { format, parseISO } from "date-fns";
 import { Datetime } from "vue-datetime";
 
@@ -84,9 +62,6 @@ export default {
     }
   },
   methods: {
-    openExternalLink(url) {
-      shell.openExternal(url);
-    },
     isTextNote() {
       return this.entry.type === "note" || this.entry.type === "markdownNote";
     },
@@ -154,15 +129,6 @@ export default {
   font-style: italic;
   line-height: 16px;
   margin-bottom: 8px;
-}
-
-.link {
-  background: none;
-  border: 0;
-  cursor: pointer;
-  text-align: left;
-  text-decoration: underline;
-  white-space: nowrap;
 }
 
 >>> h1 {

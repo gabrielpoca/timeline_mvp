@@ -14,7 +14,7 @@ const index = elasticlunr(function() {
   this.saveDocument(false);
 });
 
-export const update = async entry => {
+export const update = async (entry) => {
   return db
     .get("entries")
     .find({ id: entry.id })
@@ -25,22 +25,14 @@ export const update = async entry => {
 export const add = async ({ content }) => {
   if (content.startsWith("read:http")) {
     return addRead(content.replace("read:", ""));
-  } else if (content.startsWith("link:http")) {
-    return addLink(content.replace("link:", ""));
-  } else if (
-    content.startsWith("img:http") ||
-    content.endsWith(".jpg") ||
-    content.endsWith(".png")
-  ) {
+  } else if (content.startsWith("img:http")) {
     return addImage(content.replace("img:", ""));
-  } else if (content.startsWith("http")) {
-    return addLink(content);
   } else {
     return addNote({ content });
   }
 };
 
-export const addFile = async file => {
+export const addFile = async (file) => {
   const { id, filePath, fileName } = await images.addLocalFile(file);
 
   console.log(id, fileName, filePath);
@@ -49,7 +41,7 @@ export const addFile = async file => {
     .write();
 };
 
-export const remove = async id => {
+export const remove = async (id) => {
   const entry = db
     .get("entries")
     .find({ id: id })
@@ -69,21 +61,15 @@ export const loadAll = () => {
   return db.get("entries").value();
 };
 
-ipcMain.on("loadAll", event => {
+ipcMain.on("loadAll", (event) => {
   const entries = db.get("entries").value();
   event.sender.send("loadAll", entries);
 });
 
-const addImage = async url => {
+const addImage = async (url) => {
   const { id, filePath, fileName } = await images.addRemoteFile(url);
   db.get("entries")
     .push({ type: "img", id, fileName, filePath, createdAt: new Date() })
-    .write();
-};
-
-const addLink = async url => {
-  db.get("entries")
-    .push({ type: "link", id: shortid.generate(), url, createdAt: new Date() })
     .write();
 };
 
@@ -93,12 +79,12 @@ const addNote = async ({ content }) => {
       type: "note",
       id: shortid.generate(),
       content,
-      createdAt: new Date()
+      createdAt: new Date(),
     })
     .write();
 };
 
-const addRead = async url => {
+const addRead = async (url) => {
   const response = await axios.get(url);
   const dom = new JSDOM(response.data);
   const author = dom.window.document.querySelector('meta[name="author"]')
@@ -113,13 +99,13 @@ const addRead = async url => {
       title: dom.window.document.title,
       author,
       type: "read",
-      createdAt: new Date()
+      createdAt: new Date(),
     })
     .write();
 };
 
-loadAll().map(entry => index.addDoc(entry));
+loadAll().map((entry) => index.addDoc(entry));
 
-export const search = async query => {
+export const search = async (query) => {
   return index.search(query);
 };
