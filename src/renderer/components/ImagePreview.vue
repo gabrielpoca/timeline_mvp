@@ -13,7 +13,7 @@ import { remote } from "electron";
 const globalImages = remote.getGlobal("images");
 
 export default {
-  props: ["entry"],
+  props: ["fileName"],
   data: function() {
     return {
       src: null,
@@ -25,7 +25,7 @@ export default {
   },
   methods: {
     async loadImage() {
-      const buf = await globalImages.get(this.entry.fileName);
+      const buf = await globalImages.get(this.fileName);
       this.src = "data:image/jpeg;base64," + buf.toString("base64");
       this.$emit("entry:loaded");
     }
@@ -35,7 +35,6 @@ export default {
 
 <style scoped>
 .img {
-  max-width: 100%;
   width: 100%;
   cursor: pointer;
   max-height: 400px;

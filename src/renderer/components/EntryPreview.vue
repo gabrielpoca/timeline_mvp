@@ -24,12 +24,14 @@
       class="link"
       :to="{ name: 'readLater', params: { id: entry.id } }"
     >{{ entry.title || entry.url }}</router-link>
-
-    <image-preview
-      v-on:entry:loaded="$emit('entry:loaded')"
-      v-else-if="entry.type === 'img'"
-      :entry="entry"
-    />
+    <div v-else-if="entry.type === 'files'">
+      <image-preview
+        v-for="file in entry.files"
+        v-bind:key="file.id"
+        v-on:entry:loaded="$emit('entry:loaded')"
+        :file-name="file.fileName"
+      />
+    </div>
     <vue-markdown v-else :source="entry.previewContent || entry.content" />
   </div>
 </template>

@@ -12,7 +12,7 @@ const state = {
   newContent: "",
   newType: "note",
   editing: null,
-  mode: "normal"
+  mode: "normal",
 };
 
 function compare(a, b) {
@@ -70,7 +70,7 @@ const mutations = {
   },
   mode(state, mode) {
     state.mode = mode;
-  }
+  },
 };
 
 const actions = {
@@ -115,9 +115,7 @@ const actions = {
     commit("mode", "normal");
   },
   async addFiles({ commit }, files) {
-    for (let file of files) {
-      await globalEntries.addFile(file);
-    }
+    await globalEntries.addFiles(Array.from(files));
     commit("loadAll", await globalEntries.loadAll());
   },
   async update({ commit }, entry) {
@@ -159,38 +157,38 @@ const actions = {
     },
     200,
     { leading: false, trailing: true }
-  )
+  ),
 };
 
 const getters = {
-  selectedEntry: state => state.selectedEntry,
-  newContent: state =>
+  selectedEntry: (state) => state.selectedEntry,
+  newContent: (state) =>
     state.editing ? state.editing.content : state.newContent,
-  newType: state => (state.editing ? state.editing.type : state.newType),
-  searchQuery: state => state.searchQuery,
-  entries: state => {
+  newType: (state) => (state.editing ? state.editing.type : state.newType),
+  searchQuery: (state) => state.searchQuery,
+  entries: (state) => {
     let entries = state.entries;
 
     if (state.searchResults) {
-      const ids = state.searchResults.map(r => r.ref);
-      entries = filter(entries, entry => includes(ids, entry.id));
+      const ids = state.searchResults.map((r) => r.ref);
+      entries = filter(entries, (entry) => includes(ids, entry.id));
     }
 
     const tags = chain(entries)
       .filter({ type: "markdownNote" })
       .reduce((memo, entry) => {
-        map(entry.content.match(/\@[^ \n]+/g), match => {
+        map(entry.content.match(/\@[^ \n]+/g), (match) => {
           memo[match] = true;
         });
 
         return memo;
       }, {})
       .keys()
-      .orderBy(tag => tag.length, "desc")
+      .orderBy((tag) => tag.length, "desc")
       .value();
 
     return entries
-      .map(entry => {
+      .map((entry) => {
         if (entry.type !== "markdownNote") return entry;
 
         const previewContent = tags.reduce((memo, tag, index) => {
@@ -204,19 +202,19 @@ const getters = {
       })
       .sort(compare);
   },
-  entry: state => id => {
+  entry: (state) => (id) => {
     return state.entries.reduce((memo, entry) => {
       if (memo) return memo;
       if (entry.id === id) return entry;
       return null;
     }, null);
   },
-  mode: state => state.mode
+  mode: (state) => state.mode,
 };
 
 export default {
   state,
   mutations,
   actions,
-  getters
+  getters,
 };

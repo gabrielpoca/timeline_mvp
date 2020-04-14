@@ -1,11 +1,7 @@
 <template>
   <div ref="home" class="home">
     <entry-list ref="list" :entries="entries" :onEdit="onEdit" />
-    <entry-editor
-      v-if="mode === 'insert'"
-      ref="editor"
-      :onKeyDown="onKeyDown"
-    />
+    <entry-editor v-if="mode === 'insert'" ref="editor" :onKeyDown="onKeyDown" />
     <search-editor
       v-else-if="mode === 'search'"
       v-model="searchQuery"

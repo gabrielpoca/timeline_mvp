@@ -32,12 +32,20 @@ export const add = async ({ content }) => {
   }
 };
 
-export const addFile = async (file) => {
-  const { id, filePath, fileName } = await images.addLocalFile(file);
+export const addFiles = async (files) => {
+  if (files.length === 0) return;
 
-  console.log(id, fileName, filePath);
+  const entryFiles = await Promise.all(
+    files.map((file) => images.addLocalFile(file))
+  );
+
   db.get("entries")
-    .push({ type: "img", id, fileName, filePath, createdAt: new Date() })
+    .push({
+      id: shortid.generate(),
+      type: "files",
+      files: entryFiles,
+      createdAt: new Date(),
+    })
     .write();
 };
 
@@ -47,8 +55,8 @@ export const remove = async (id) => {
     .find({ id: id })
     .value();
 
-  if (entry.type === "img") {
-    await images.remove(entry.fileName);
+  if (entry.type === "files") {
+    await Promise.all(entry.files.map((file) => images.remove(file.fileName)));
   }
 
   return db
