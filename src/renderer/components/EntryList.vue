@@ -21,7 +21,7 @@ import { debounce } from "lodash";
 import EntryPreview from "./EntryPreview";
 
 export default {
-  props: ["entries", "onEdit"],
+  props: ["onEdit"],
   components: {
     EntryPreview
   },
@@ -29,6 +29,11 @@ export default {
     this.scrollToEnd();
   },
   computed: {
+    entries: {
+      get() {
+        return this.$store.getters.entries;
+      }
+    },
     selectedEntry: {
       get() {
         return this.$store.getters.selectedEntry;
@@ -36,6 +41,11 @@ export default {
       set(value) {
         this.$store.commit("selectedEntry", value);
       }
+    }
+  },
+  watch: {
+    entries(entries, oldEntries) {
+      if (entries.length > oldEntries.length) this.scrollToEnd();
     }
   },
   methods: {

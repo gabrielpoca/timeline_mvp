@@ -17,14 +17,13 @@
 <script>
 export default {
   props: ["value", "onKeyDown"],
-
   data: function() {
     return { focused: false };
   },
+  mounted() {
+    this.$refs.input.focus();
+  },
   methods: {
-    focus() {
-      this.$refs.input.focus();
-    },
     onSearch(e) {
       e.preventDefault();
       this.$store.dispatch("search");

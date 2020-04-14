@@ -11,12 +11,7 @@
       ref="input"
     />
   </form>
-  <notes-editor
-    v-else
-    v-model="newContent"
-    v-bind:keydown="onKeyDown"
-    ref="input"
-  ></notes-editor>
+  <notes-editor v-else v-model="newContent" v-bind:keydown="onKeyDown" ref="input"></notes-editor>
 </template>
 
 <script>
@@ -47,10 +42,10 @@ export default {
   data: function() {
     return { focused: false };
   },
+  mounted() {
+    this.$refs.input.focus();
+  },
   methods: {
-    focus() {
-      this.$refs.input.focus();
-    },
     async onSubmit(e) {
       e.preventDefault();
       this.$store.dispatch("add");

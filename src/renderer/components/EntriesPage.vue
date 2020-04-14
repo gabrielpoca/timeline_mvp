@@ -1,6 +1,6 @@
 <template>
   <div ref="home" class="home">
-    <entry-list ref="list" :entries="entries" :onEdit="onEdit" />
+    <entry-list ref="list" :onEdit="onEdit" />
     <entry-editor v-if="mode === 'insert'" ref="editor" :onKeyDown="onKeyDown" />
     <search-editor
       v-else-if="mode === 'search'"
@@ -27,11 +27,6 @@ export default {
     SearchEditor
   },
   computed: {
-    entries: {
-      get() {
-        return this.$store.getters.entries;
-      }
-    },
     searchQuery: {
       get() {
         return this.$store.getters.searchQuery;
@@ -82,10 +77,10 @@ export default {
       if (e.target === window.document.body) {
         if (e.key === "i") {
           this.mode = "insert";
-          setTimeout(() => this.$refs.editor.focus(), 0);
+          e.preventDefault();
         } else if (e.key === "/") {
           this.mode = "search";
-          setTimeout(() => this.$refs.search.focus(), 0);
+          e.preventDefault();
         } else if (e.key === "e") {
           this.onEdit();
         } else if (e.key === "j" || e.key === "ArrowDown") {
