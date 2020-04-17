@@ -1,5 +1,5 @@
 import { remote } from "electron";
-import { filter, includes, debounce, map, chain, findIndex } from "lodash";
+import { filter, includes, debounce, findIndex } from "lodash";
 
 const globalEntries = remote.getGlobal("entries");
 window.globalEntries = globalEntries;
@@ -27,7 +27,7 @@ const mutations = {
     state.selectedEntry = entry.id;
   },
   loadAll(state, entries) {
-    state.entries = entries;
+    state.entries = entries.sort(compare);
   },
   changeType(state, newType) {
     const nextType = newType
@@ -174,33 +174,7 @@ const getters = {
       entries = filter(entries, (entry) => includes(ids, entry.id));
     }
 
-    const tags = chain(entries)
-      .filter({ type: "markdownNote" })
-      .reduce((memo, entry) => {
-        map(entry.content.match(/\@[^ \n]+/g), (match) => {
-          memo[match] = true;
-        });
-
-        return memo;
-      }, {})
-      .keys()
-      .orderBy((tag) => tag.length, "desc")
-      .value();
-
-    return entries
-      .map((entry) => {
-        if (entry.type !== "markdownNote") return entry;
-
-        const previewContent = tags.reduce((memo, tag, index) => {
-          return memo.replace(
-            new RegExp(`${tag}\\b`),
-            `<span class="highlight-${index}">${tag}</span>`
-          );
-        }, entry.content);
-
-        return { ...entry, previewContent };
-      })
-      .sort(compare);
+    return entries;
   },
   entry: (state) => (id) => {
     return state.entries.reduce((memo, entry) => {
