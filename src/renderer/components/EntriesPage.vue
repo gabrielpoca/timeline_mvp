@@ -1,7 +1,11 @@
 <template>
   <div ref="home" class="home">
     <entry-list ref="list" :onEdit="onEdit" />
-    <entry-editor v-if="mode === 'insert'" ref="editor" :onKeyDown="onKeyDown" />
+    <entry-editor
+      v-if="mode === 'insert'"
+      ref="editor"
+      :onKeyDown="onKeyDown"
+    />
     <search-editor
       v-else-if="mode === 'search'"
       v-model="searchQuery"
@@ -24,7 +28,7 @@ export default {
   components: {
     EntryEditor,
     EntryList,
-    SearchEditor
+    SearchEditor,
   },
   computed: {
     searchQuery: {
@@ -33,7 +37,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("search", value);
-      }
+      },
     },
     mode: {
       get() {
@@ -41,8 +45,8 @@ export default {
       },
       set(value) {
         this.$store.commit("mode", value);
-      }
-    }
+      },
+    },
   },
   created() {
     window.addEventListener("keydown", this.onKeyDown);
@@ -60,7 +64,7 @@ export default {
       return false;
     };
 
-    this.$refs.home.ondrop = e => {
+    this.$refs.home.ondrop = (e) => {
       e.preventDefault();
       this.$store.dispatch("addFiles", e.dataTransfer.files);
       return false;
@@ -87,6 +91,8 @@ export default {
           this.$store.dispatch("selectDown");
         } else if (e.key === "k" || e.key === "ArrowUp") {
           this.$store.dispatch("selectUp");
+        } else if (e.key === "t") {
+          this.$store.commit("entriesFilter", "tasks");
         }
       }
 
@@ -109,8 +115,8 @@ export default {
     },
     scrollToEnd: function() {
       this.$refs.list.scrollToEnd();
-    }
-  }
+    },
+  },
 };
 </script>
 

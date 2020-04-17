@@ -23,7 +23,7 @@ import EntryPreview from "./EntryPreview";
 export default {
   props: ["onEdit"],
   components: {
-    EntryPreview
+    EntryPreview,
   },
   created() {
     this.scrollToEnd();
@@ -32,7 +32,7 @@ export default {
     entries: {
       get() {
         return this.$store.getters.entries;
-      }
+      },
     },
     selectedEntry: {
       get() {
@@ -40,37 +40,40 @@ export default {
       },
       set(value) {
         this.$store.commit("selectedEntry", value);
-      }
-    }
+      },
+    },
   },
   watch: {
     entries(entries, oldEntries) {
-      if (entries.length > oldEntries.length) this.scrollToEnd();
-    }
+      if (entries.length > oldEntries.length) {
+        this.scrollToEnd();
+      }
+    },
   },
   methods: {
     scrollToElement: debounce(
       function(el) {
         el.scrollIntoView({
           block: "end",
-          inline: "nearest"
+          inline: "nearest",
         });
       },
       10,
       {
         leading: false,
-        trailing: true
+        trailing: true,
       }
     ),
     scrollToEnd: debounce(
       function() {
+        if (this.selectedEntry) return;
         const content = this.$refs.list;
         content.scrollTop = content.scrollHeight;
       },
       200,
       { leading: false, trailing: true }
-    )
-  }
+    ),
+  },
 };
 </script>
 

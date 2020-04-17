@@ -9,6 +9,7 @@ const state = {
   selectedEntry: null,
   searchQuery: "",
   searchResults: null,
+  entriesFilter: null,
   newContent: "",
   newType: "note",
   editing: null,
@@ -59,6 +60,7 @@ const mutations = {
     state.editing = null;
     state.newType = "note";
     state.mode = "normal";
+    state.entriesFilter = null;
   },
   reset(state) {
     state.editing = null;
@@ -70,6 +72,9 @@ const mutations = {
   },
   mode(state, mode) {
     state.mode = mode;
+  },
+  entriesFilter(state, entriesFilter) {
+    state.entriesFilter = entriesFilter;
   },
 };
 
@@ -173,6 +178,14 @@ const getters = {
       const ids = state.searchResults.map((r) => r.ref);
       entries = filter(entries, (entry) => includes(ids, entry.id));
     }
+
+    if (state.entriesFilter === "tasks")
+      return entries.filter((entry) => {
+        if (entry.type !== "note" && entry.type !== "markdownNote")
+          return false;
+
+        return entry.content.match(/- ?\[[^\]]*?\]/);
+      });
 
     return entries;
   },
