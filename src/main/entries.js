@@ -1,4 +1,4 @@
-import { ipcMain } from "electron";
+import { ipcMain, app } from "electron";
 import axios from "axios";
 import shortid from "shortid";
 import { JSDOM } from "jsdom";
@@ -66,7 +66,9 @@ export const remove = async (id) => {
 };
 
 export const loadAll = () => {
-  return db.get("entries").value();
+  const entries = db.get("entries").value();
+  setAppBadge(entries);
+  return entries;
 };
 
 ipcMain.on("loadAll", (event) => {
@@ -117,3 +119,14 @@ loadAll().map((entry) => index.addDoc(entry));
 export const search = async (query) => {
   return index.search(query);
 };
+
+function setAppBadge(entries) {
+  const count = entries
+    .filter(({ type }) => type === "note" || type === "markdownNote")
+    .reduce((memo, entry) => {
+      const match = entry.content.match(/- ?\[ ?\]/g);
+      return memo + (match ? match.length : 0);
+    }, 0);
+
+  app.dock.setBadge(count + "");
+}
