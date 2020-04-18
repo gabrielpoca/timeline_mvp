@@ -125,7 +125,7 @@ export default {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 40px 0 24px;
+  padding: calc(var(--title-bar-height) + 16px) 0 24px;
 }
 
 .list {

@@ -26,14 +26,14 @@ const winURL =
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    titleBarStyle: "hiddenInset",
+    titleBarStyle: "hidden",
     height: 800,
     useContentSize: true,
-    width: process.env.NODE_ENV === "production" ? 900 : 1500,
+    width: process.env.NODE_ENV === "production" ? 900 : 1200,
     enableRemoteModule: true,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
 
   mainWindow.loadURL(winURL);

@@ -38,24 +38,24 @@ export default {
       return this.$store.getters.entry(this.id);
     },
   },
-  mounted: function () {
+  mounted: function() {
     window.addEventListener("message", this.onClick);
   },
-  beforeDestroy: function () {
+  beforeDestroy: function() {
     window.removeEventListener("message", this.onClick);
   },
   methods: {
-    onClick: function (event) {
+    onClick: function(event) {
       const { type, url } = event.data;
       if (type === "iframeClick") {
         if (url && !url.includes("localhost")) shell.openExternal(url);
       }
     },
-    remove: function () {
+    remove: function() {
       ipcRenderer.send("delete", this.id);
       this.$router.push({ name: "entries" });
     },
-    parse: function (url, content) {
+    parse: function(url, content) {
       const doc = new JSDOM(content, {
         url,
       });
@@ -87,7 +87,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 4px 24px 16px;
-  margin-top: 40px;
+  margin-top: calc(var(--title-bar-height) + 16px);
 }
 
 .title {

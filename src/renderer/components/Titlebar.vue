@@ -7,8 +7,8 @@
   -webkit-user-select: none;
   -webkit-app-region: drag;
   width: 100%;
-  height: 40px;
-  background: white;
+  height: var(--title-bar-height);
+  background: black;
   z-index: 1;
   position: fixed;
   top: 0;
