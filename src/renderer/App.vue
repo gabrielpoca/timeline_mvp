@@ -11,8 +11,8 @@ import Titlebar from "./components/Titlebar";
 export default {
   name: "read_it_later",
   components: {
-    Titlebar,
-  },
+    Titlebar
+  }
 };
 </script>
 
@@ -56,6 +56,7 @@ html {
   font-family: "IBM Plex Sans";
   color: #333;
   overflow: hidden;
+  background: white;
   --title-bar-height: 22px;
 }
 
