@@ -127,6 +127,6 @@ function setAppBadge(entries) {
       const match = entry.content.match(/- ?\[ ?\]/g);
       return memo + (match ? match.length : 0);
     }, 0);
-
-  app.dock.setBadge(count + "");
+  if (count > 0) app.dock.setBadge(count + "");
+  else app.dock.setBadge("");
 }
