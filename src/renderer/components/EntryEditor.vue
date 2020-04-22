@@ -1,8 +1,8 @@
 <template>
-  <form v-if="newType === 'note'" class="form" @submit="onSubmit">
-    <div class="tick" v-bind:class="{ hidden: !focused && !newContent }">:</div>
+  <form v-if="type === 'note'" class="form" @submit="onSubmit">
+    <div class="tick" v-bind:class="{ hidden: !focused && !content }">:</div>
     <input
-      v-model="newContent"
+      v-model="content"
       @keydown="onKeyDown"
       @focus="focused = true"
       @blur="focused = false"
@@ -11,7 +11,12 @@
       ref="input"
     />
   </form>
-  <notes-editor v-else v-model="newContent" v-bind:keydown="onKeyDown" ref="input"></notes-editor>
+  <notes-editor
+    v-else
+    v-model="content"
+    v-bind:keydown="onKeyDown"
+    ref="input"
+  ></notes-editor>
 </template>
 
 <script>
@@ -25,18 +30,16 @@ export default {
     NotesEditor
   },
   computed: {
-    newContent: {
+    content: {
       get() {
-        return this.$store.getters.newContent;
+        return this.$store.state.Editor.content;
       },
       set(value) {
-        this.$store.commit("updateContent", value);
+        this.$store.commit("Editor/content", value);
       }
     },
-    newType: {
-      get() {
-        return this.$store.getters.newType;
-      }
+    type() {
+      return this.$store.state.Editor.type;
     }
   },
   data: function() {
@@ -46,9 +49,9 @@ export default {
     this.$refs.input.focus();
   },
   methods: {
-    async onSubmit(e) {
+    onSubmit(e) {
       e.preventDefault();
-      this.$store.dispatch("add");
+      this.$store.dispatch("Editor/save");
     }
   }
 };

@@ -1,6 +1,7 @@
 <template>
   <div
     :class="{ 'entry-preview': true, 'entry-selected': selected }"
+    @click="onSelect"
     @mouseleave="hover = false"
     @mouseover="hover = true"
     ref="entryPreview"
@@ -59,28 +60,37 @@ import MarkdownPreview from "./MarkdownPreview";
 import ImagePreview from "./ImagePreview";
 
 export default {
-  props: ["entry", "onEdit", "selected", "scrollToElement"],
+  props: ["entry", "onEdit", "scrollToElement"],
   components: {
     Datetime,
     ImagePreview,
-    MarkdownPreview,
+    MarkdownPreview
   },
   data: function() {
     return {
       hover: false,
-      createdAt: this.entry.createdAt.toString(),
+      createdAt: this.entry.createdAt.toString()
     };
   },
+  computed: {
+    selected() {
+      if (this.$store.getters.selectedEntry.id === this.entry.id) {
+        if (this.$store.getters.selectedEntry.scrollIntoView) return "scroll";
+        else return true;
+      } else {
+        return false;
+      }
+    }
+  },
   watch: {
-    selected: function() {
-      this.scrollToElement(this.$refs.entryPreview);
-    },
+    selected: function(value) {
+      if (value === "scroll") this.scrollToElement(this.$refs.entryPreview);
+    }
   },
   methods: {
     isTextNote() {
       return this.entry.type === "note" || this.entry.type === "markdownNote";
     },
-
     date() {
       return format(new Date(this.entry.createdAt), "H:M - dd/MM");
     },
@@ -93,7 +103,10 @@ export default {
     onRemove() {
       this.$store.dispatch("remove", this.entry.id);
     },
-  },
+    onSelect() {
+      this.$store.commit("selectedEntry", { entry: this.entry });
+    }
+  }
 };
 </script>
 
@@ -115,18 +128,19 @@ export default {
 </style>
 
 <style scoped>
-.entry-selected {
-  border-color: #7c7c7c !important;
+.entry-selected .date:before {
+  content: ">";
+  position: absolute;
+  top: 0px;
+  left: -14px;
+  font-style: normal;
 }
 
 .entry-preview {
-  padding: 0 11px;
-  margin: 0 13px;
-  border-left: 1px dashed transparent;
+  margin: 0 24px;
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-x: hidden;
 }
 
 .nav-btn {
@@ -144,5 +158,6 @@ export default {
   font-style: italic;
   line-height: 16px;
   margin-bottom: 8px;
+  position: relative;
 }
 </style>

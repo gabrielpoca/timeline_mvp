@@ -3,7 +3,6 @@
     <ul class="list">
       <li class="list-entry" v-for="entry in entries" :key="entry.id">
         <entry-preview
-          :selected="entry.id === selectedEntry"
           :entry="entry"
           :onEdit="onEdit"
           :scrollToElement="scrollToElement"
@@ -29,18 +28,11 @@ export default {
     this.scrollToEnd();
   },
   computed: {
-    entries: {
-      get() {
-        return this.$store.getters.entries;
-      }
+    entries() {
+      return this.$store.getters.entries;
     },
-    selectedEntry: {
-      get() {
-        return this.$store.getters.selectedEntry;
-      },
-      set(value) {
-        this.$store.commit("selectedEntry", value);
-      }
+    selectedEntry() {
+      return this.$store.getters.selectedEntry;
     }
   },
   watch: {

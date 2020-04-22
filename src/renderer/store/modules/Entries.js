@@ -6,13 +6,10 @@ window.globalEntries = globalEntries;
 
 const state = {
   entries: [],
-  selectedEntry: null,
+  selectedEntry: {},
   searchQuery: "",
   searchResults: null,
   entriesFilter: null,
-  newContent: "",
-  newType: "note",
-  editing: null,
   mode: "normal",
 };
 
@@ -24,28 +21,12 @@ function compare(a, b) {
 }
 
 const mutations = {
-  selectedEntry(state, entry) {
-    state.selectedEntry = entry.id;
+  selectedEntry(state, { entry, scrollIntoView }) {
+    if (entry) state.selectedEntry = { id: entry.id, scrollIntoView };
+    else state.selectedEntry = {};
   },
   loadAll(state, entries) {
     state.entries = entries.sort(compare);
-  },
-  changeType(state, newType) {
-    const nextType = newType
-      ? newType
-      : state.newType === "note"
-      ? "markdownNote"
-      : "note";
-
-    if (state.editing) state.editing.type = nextType;
-    else state.newType = nextType;
-  },
-  updateContent(state, content) {
-    if (state.editing) {
-      state.editing.content = content;
-    } else {
-      state.newContent = content;
-    }
   },
   searchQuery(state, query) {
     state.searchQuery = query;
@@ -53,19 +34,9 @@ const mutations = {
   remove(state, entryId) {
     state.entries = state.entries.filter(({ id }) => id !== entryId);
   },
-  edit(state, entry) {
-    state.editing = entry;
-  },
   cancel(state) {
-    state.editing = null;
-    state.newType = "note";
     state.mode = "normal";
     state.entriesFilter = null;
-  },
-  reset(state) {
-    state.editing = null;
-    state.newContent = "";
-    state.newType = "note";
   },
   searchResults(state, results) {
     state.searchResults = results;
@@ -82,41 +53,34 @@ const actions = {
   selectUp({ state, commit, getters }) {
     if (state.mode !== "normal") return;
 
-    if (!state.selectedEntry)
-      return commit(
-        "selectedEntry",
-        getters.entries[getters.entries.length - 1]
-      );
+    if (!state.selectedEntry.id)
+      return commit("selectedEntry", {
+        entry: getters.entries[getters.entries.length - 1],
+        scrollIntoView: true,
+      });
 
-    const index = findIndex(getters.entries, { id: state.selectedEntry });
+    const index = findIndex(getters.entries, { id: state.selectedEntry.id });
     const newSelectedEntry = getters.entries[Math.max(index - 1, 0)];
-    commit("selectedEntry", newSelectedEntry);
+    commit("selectedEntry", { entry: newSelectedEntry, scrollIntoView: true });
   },
   selectDown({ state, commit, getters }) {
     if (state.mode !== "normal") return;
 
-    if (!state.selectedEntry)
-      return commit(
-        "selectedEntry",
-        getters.entries[getters.entries.length - 1]
-      );
+    if (!state.selectedEntry.id)
+      return commit("selectedEntry", {
+        entry: getters.entries[getters.entries.length - 1],
+        scrollIntoView: true,
+      });
 
-    const index = findIndex(getters.entries, { id: state.selectedEntry });
+    const index = findIndex(getters.entries, { id: state.selectedEntry.id });
     const newSelectedEntry =
       getters.entries[Math.min(index + 1, getters.entries.length - 1)];
-    commit("selectedEntry", newSelectedEntry);
+    commit("selectedEntry", { entry: newSelectedEntry, scrollIntoView: true });
   },
-  async add({ commit, state }) {
-    if (state.editing) {
-      await globalEntries.update(state.editing);
-      commit("loadAll", await globalEntries.loadAll());
-      commit("reset");
-    } else if (!!state.newContent) {
-      await globalEntries.add({ content: state.newContent });
-      commit("loadAll", await globalEntries.loadAll());
-      commit("reset");
-    }
-
+  async add({ commit }, entry) {
+    await globalEntries.add(entry);
+    commit("loadAll", await globalEntries.loadAll());
+    commit("cancel");
     commit("mode", "normal");
   },
   async addFiles({ commit }, files) {
@@ -126,6 +90,7 @@ const actions = {
   async update({ commit }, entry) {
     await globalEntries.update(entry);
     commit("loadAll", await globalEntries.loadAll());
+    commit("mode", "normal");
   },
   async remove({ commit }, id) {
     await globalEntries.remove(id);
@@ -137,16 +102,14 @@ const actions = {
     commit("mode", "insert");
 
     if (entry) {
-      commit("edit", { ...entry });
-    } else if (state.selectedEntry) {
-      const index = findIndex(getters.entries, { id: state.selectedEntry });
-      commit("edit", { ...getters.entries[index] });
+      commit("Editor/edit", { ...entry });
+    } else if (state.selectedEntry.id) {
+      const index = findIndex(getters.entries, { id: state.selectedEntry.id });
+      commit("Editor/edit", { ...getters.entries[index] });
     } else {
       const editEntry = getters.entries[getters.entries.length - 1];
-      commit("edit", { ...editEntry });
+      commit("Editor/edit", { ...editEntry });
     }
-
-    commit("changeType", "markdownNote");
   },
   search: debounce(
     async ({ commit }, searchQuery) => {
@@ -167,9 +130,6 @@ const actions = {
 
 const getters = {
   selectedEntry: (state) => state.selectedEntry,
-  newContent: (state) =>
-    state.editing ? state.editing.content : state.newContent,
-  newType: (state) => (state.editing ? state.editing.type : state.newType),
   searchQuery: (state) => state.searchQuery,
   entries: (state) => {
     let entries = state.entries;

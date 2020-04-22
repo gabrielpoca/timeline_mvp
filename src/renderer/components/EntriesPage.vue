@@ -2,14 +2,14 @@
   <div ref="home" class="home">
     <entry-list ref="list" :onEdit="onEdit" />
     <entry-editor
-      v-if="mode === 'insert'"
       ref="editor"
+      v-if="mode === 'insert'"
       :onKeyDown="onKeyDown"
     />
     <search-editor
+      ref="search"
       v-else-if="mode === 'search'"
       v-model="searchQuery"
-      ref="search"
       :onKeyDown="onKeyDown"
     />
   </div>
@@ -28,7 +28,7 @@ export default {
   components: {
     EntryEditor,
     EntryList,
-    SearchEditor,
+    SearchEditor
   },
   computed: {
     searchQuery: {
@@ -37,7 +37,7 @@ export default {
       },
       set(value) {
         this.$store.dispatch("search", value);
-      },
+      }
     },
     mode: {
       get() {
@@ -45,8 +45,8 @@ export default {
       },
       set(value) {
         this.$store.commit("mode", value);
-      },
-    },
+      }
+    }
   },
   created() {
     window.addEventListener("keydown", this.onKeyDown);
@@ -64,7 +64,7 @@ export default {
       return false;
     };
 
-    this.$refs.home.ondrop = (e) => {
+    this.$refs.home.ondrop = e => {
       e.preventDefault();
       this.$store.dispatch("addFiles", e.dataTransfer.files);
       return false;
@@ -99,12 +99,12 @@ export default {
       if (this.mode === "insert") {
         if (e.key === "Enter" && e.shiftKey) {
           e.stopPropagation();
-          this.$store.commit("changeType");
+          this.$store.commit("Editor/changeType");
           Vue.nextTick(() => this.scrollToEnd());
         }
 
         if (e.key === "Enter" && e.metaKey) {
-          this.$store.dispatch("add");
+          this.$store.dispatch("Editor/save");
         }
       }
 
@@ -115,8 +115,8 @@ export default {
     },
     scrollToEnd: function() {
       this.$refs.list.scrollToEnd();
-    },
-  },
+    }
+  }
 };
 </script>
 
