@@ -1,5 +1,5 @@
 import { remote } from "electron";
-import { filter, includes, debounce, findIndex } from "lodash";
+import { filter, includes, debounce, findIndex, last } from "lodash";
 
 const globalEntries = remote.getGlobal("entries");
 window.globalEntries = globalEntries;
@@ -21,18 +21,26 @@ function compare(a, b) {
 }
 
 const mutations = {
-  selectedEntry(state, { entry, scrollIntoView }) {
-    if (entry) state.selectedEntry = { id: entry.id, scrollIntoView };
-    else state.selectedEntry = {};
+  selectedEntry(state, { entry, index, scrollIntoView }) {
+    if (entry) {
+      state.selectedEntry = { id: entry.id, scrollIntoView };
+    } else {
+      state.selectedEntry = {};
+    }
+
+    state.selectedEntryIndex = index;
   },
   loadAll(state, entries) {
     state.entries = entries.sort(compare);
+    state.selectedEntryIndex = null;
   },
   searchQuery(state, query) {
     state.searchQuery = query;
+    state.selectedEntryIndex = null;
   },
   remove(state, entryId) {
     state.entries = state.entries.filter(({ id }) => id !== entryId);
+    state.selectedEntryIndex = null;
   },
   cancel(state) {
     state.mode = "normal";
@@ -40,12 +48,14 @@ const mutations = {
   },
   searchResults(state, results) {
     state.searchResults = results;
+    state.selectedEntryIndex = null;
   },
   mode(state, mode) {
     state.mode = mode;
   },
   entriesFilter(state, entriesFilter) {
     state.entriesFilter = entriesFilter;
+    state.selectedEntryIndex = null;
   },
 };
 
@@ -55,27 +65,42 @@ const actions = {
 
     if (!state.selectedEntry.id)
       return commit("selectedEntry", {
-        entry: getters.entries[getters.entries.length - 1],
+        entry: last(getters.entries),
         scrollIntoView: true,
       });
 
-    const index = findIndex(getters.entries, { id: state.selectedEntry.id });
-    const newSelectedEntry = getters.entries[Math.max(index - 1, 0)];
-    commit("selectedEntry", { entry: newSelectedEntry, scrollIntoView: true });
+    const index =
+      state.selectedEntryIndex ||
+      findIndex(getters.entries, { id: state.selectedEntry.id });
+    const nextIndex = Math.max(index - 1, 0);
+    const nextEntry = getters.entries[nextIndex];
+
+    commit("selectedEntry", {
+      entry: nextEntry,
+      index: nextIndex,
+      scrollIntoView: true,
+    });
   },
   selectDown({ state, commit, getters }) {
     if (state.mode !== "normal") return;
 
     if (!state.selectedEntry.id)
       return commit("selectedEntry", {
-        entry: getters.entries[getters.entries.length - 1],
+        entry: last(getters.entries),
         scrollIntoView: true,
       });
 
-    const index = findIndex(getters.entries, { id: state.selectedEntry.id });
-    const newSelectedEntry =
-      getters.entries[Math.min(index + 1, getters.entries.length - 1)];
-    commit("selectedEntry", { entry: newSelectedEntry, scrollIntoView: true });
+    const index =
+      state.selectedEntryIndex ||
+      findIndex(getters.entries, { id: state.selectedEntry.id });
+    const nextIndex = Math.min(index + 1, getters.entries.length - 1);
+    const nextEntry = getters.entries[nextIndex];
+
+    commit("selectedEntry", {
+      entry: nextEntry,
+      index: nextIndex,
+      scrollIntoView: true,
+    });
   },
   async add({ commit }, entry) {
     await globalEntries.add(entry);

@@ -74,17 +74,15 @@ export default {
   },
   computed: {
     selected() {
-      if (this.$store.getters.selectedEntry.id === this.entry.id) {
-        if (this.$store.getters.selectedEntry.scrollIntoView) return "scroll";
-        else return true;
-      } else {
-        return false;
-      }
+      return this.$store.getters.selectedEntry.id === this.entry.id;
+    },
+    scroll() {
+      return this.selected && this.$store.getters.selectedEntry.scrollIntoView;
     }
   },
   watch: {
-    selected: function(value) {
-      if (value === "scroll") this.scrollToElement(this.$refs.entryPreview);
+    scroll: function(value) {
+      if (value) this.scrollToElement(this.$refs.entryPreview);
     }
   },
   methods: {
