@@ -72,6 +72,9 @@ const actions = {
     const index =
       state.selectedEntryIndex ||
       findIndex(getters.entries, { id: state.selectedEntry.id });
+
+    if (index === 0) return;
+
     const nextIndex = Math.max(index - 1, 0);
     const nextEntry = getters.entries[nextIndex];
 
@@ -93,6 +96,9 @@ const actions = {
     const index =
       state.selectedEntryIndex ||
       findIndex(getters.entries, { id: state.selectedEntry.id });
+
+    if (index === getters.entries.length - 1) return;
+
     const nextIndex = Math.min(index + 1, getters.entries.length - 1);
     const nextEntry = getters.entries[nextIndex];
 
@@ -105,7 +111,6 @@ const actions = {
   async add({ commit }, entry) {
     await globalEntries.add(entry);
     commit("loadAll", await globalEntries.loadAll());
-    commit("cancel");
     commit("mode", "normal");
   },
   async addFiles({ commit }, files) {

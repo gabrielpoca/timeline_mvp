@@ -24,10 +24,16 @@ const mutations = {
   changeType(state) {
     state.type = state.type === "note" ? "markdownNote" : "note";
   },
+  reset(state) {
+    state.id = null;
+    state.content = null;
+    state.type = "note";
+    state.files = [];
+  },
 };
 
 const actions = {
-  save({ state, dispatch }) {
+  save({ state, dispatch, commit }) {
     if (!state.content) return;
 
     if (state.id) {
@@ -38,7 +44,7 @@ const actions = {
       dispatch("add", pick(state, ["content", "files"]), { root: true });
     }
 
-    state = { ...initialState };
+    commit("reset");
   },
 };
 
