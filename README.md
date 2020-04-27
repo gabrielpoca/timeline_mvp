@@ -16,6 +16,10 @@ Features:
 * full keyboard navigation
 * incomplete to-do's notificaiton in the dock
 
+Here's a demo:
+
+![Demo](demo.gif)
+
 #### Build Setup
 
 ``` bash
