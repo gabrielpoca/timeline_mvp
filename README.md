@@ -1,6 +1,20 @@
-# read_later
+# Timeline
 
-> An electron-vue project
+Timeline is a note-taking application for the unorganised. I built it because I couldn't find anything that fits my needs. The idea is pretty simple. You write everything on it and then powerfull searching gets you want you're looking for. Anything goes: text, images, PDFs, etc.
+
+> ⚠️ This is a prototype I build for myself to validate my idea. I wrote it in VueJS because I needed to keep things interesting. I'm now rewriting it in React because that's the framework I've been using these past 5 years. Vue was refreshing, I truly enjoyed it, but unfortunally I don't have enough energy to keep it going.
+
+
+Features:
+
+* write in markdown
+* drop images
+* change date
+* edit notes
+* colored tags
+* full-text search
+* full keyboard navigation
+* incomplete to-do's notificaiton in the dock
 
 #### Build Setup
 
@@ -13,16 +27,4 @@ npm run dev
 
 # build electron application for production
 npm run build
-
-# run unit & end-to-end tests
-npm test
-
-
-# lint all JS/Vue component files in `src/`
-npm run lint
-
 ```
-
----
-
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[45a3e22](https://github.com/SimulatedGREG/electron-vue/tree/45a3e224e7bb8fc71909021ccfdcfec0f461f634) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
