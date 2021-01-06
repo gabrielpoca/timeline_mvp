@@ -1,3 +1,5 @@
+# ⚠️ This was a prototype, for the real thing check [Notedown](https://github.com/subvisual/notedown).
+
 # Timeline
 
 Timeline is a note-taking application for the unorganised. I built it because I couldn't find anything that fits my needs. The idea is pretty simple. You write everything on it and then powerfull searching gets you want you're looking for. Anything goes: text, images, PDFs, etc.
