@@ -65,7 +65,7 @@
     "luxon": "^1.22.2",
     "ora": "^4.0.3",
     "readability": "https://github.com/mozilla/readability#dc34dfd8fa6d5c17801efbc2e115dc368b7117c8",
-    "sanitize-html": "^1.22.1",
+    "sanitize-html": "^2.3.2",
     "shortid": "^2.2.15",
     "showdown": "^1.9.1",
     "simplemde-theme-base": "^0.2.1",
