@@ -62,7 +62,7 @@
     "jsdom": "^16.2.1",
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
-    "luxon": "^1.22.2",
+    "luxon": "^1.28.1",
     "ora": "^4.0.3",
     "readability": "https://github.com/mozilla/readability#dc34dfd8fa6d5c17801efbc2e115dc368b7117c8",
     "sanitize-html": "^1.22.1",
